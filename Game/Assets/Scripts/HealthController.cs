@@ -8,10 +8,12 @@ public class HealthController : MonoBehaviour
     [SerializeField] private ResourceData m_healthData;
     private ResourceController m_resourceController;
     private EventHandler m_healthDownToZero;
+
+    public ResourceController ResourceController => this.m_resourceController;
     
     private void Awake() 
     {
-        m_resourceController = new ResourceController(m_healthData);
+        this.m_resourceController = new ResourceController(m_healthData);
     }
     
     public event EventHandler HealthDownToZero

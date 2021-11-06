@@ -8,6 +8,7 @@ namespace UnityTemplateProjects
     public class PlayerStatsController : MonoBehaviour
     {
         [SerializeField] private PlayerData m_initialPlayerData;
+        [SerializeField] private HealthController m_healthController;
         
         public float CurrentMovementSpeed { get; set; }
         public float CurrentDashDistance { get; set; }
@@ -15,6 +16,7 @@ namespace UnityTemplateProjects
         public int CurrentShootFramesCooldown { get; set; }
         public int CurrentAttackDamage { get; set; }
         public int CurrentDefense { get; set; }
+        public HealthController HealthController => this.m_healthController;
 
         private void Awake()
         {

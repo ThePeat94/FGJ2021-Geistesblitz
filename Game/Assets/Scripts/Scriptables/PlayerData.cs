@@ -13,7 +13,6 @@ namespace Scriptables
         [SerializeField] private GameObject m_projectilePrefab;
         [SerializeField] private int m_attackDamage;
         [SerializeField] private int m_defense;
-        [SerializeField] private HealthController m_healthController;
 
         public float MovementSpeed => this.m_movementSpeed;
         public float RotationSpeed => this.m_rotationSpeed;
