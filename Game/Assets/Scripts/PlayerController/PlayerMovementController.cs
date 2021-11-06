@@ -13,9 +13,7 @@ public class PlayerMovementController : MonoBehaviour
 {
     private static PlayerMovementController s_instance;
 
-    [SerializeField] private PlayerData m_playerData;
-    [SerializeField] private GameObject m_funnySphere;
-
+    private PlayerStatsController m_playerStatsController;
     private Vector3 m_moveDirection;
     private CharacterController m_characterController;
     private InputProcessor m_inputProcessor;
@@ -40,7 +38,8 @@ public class PlayerMovementController : MonoBehaviour
             Destroy(this.gameObject);
             return;
         }
-        
+
+        this.m_playerStatsController = this.GetComponent<PlayerStatsController>();
         this.m_inputProcessor = this.GetComponent<InputProcessor>();
         this.m_playerDashController = this.GetComponent<PlayerDashController>();
         this.m_characterController = this.GetComponent<CharacterController>();
@@ -74,7 +73,7 @@ public class PlayerMovementController : MonoBehaviour
 
         this.m_moveDirection = Vector3.Lerp(forwardMovement, sideMovement, 0.5f).normalized;
         this.m_moveDirection.y = Physics.gravity.y;
-        this.m_characterController.Move(this.m_moveDirection * Time.deltaTime * this.m_playerData.MovementSpeed);
+        this.m_characterController.Move(this.m_moveDirection * Time.deltaTime * this.m_playerStatsController.CurrentMovementSpeed);
     }
         
     private void Rotate()

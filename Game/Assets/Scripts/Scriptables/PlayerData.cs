@@ -11,13 +11,19 @@ namespace Scriptables
         [SerializeField] private int m_dashFramesCooldown;
         [SerializeField] private int m_shootFramesCooldown;
         [SerializeField] private GameObject m_projectilePrefab;
-        
+        [SerializeField] private int m_attackDamage;
+        [SerializeField] private int m_defense;
+        [SerializeField] private ResourceData m_healthData;
+
         public float MovementSpeed => this.m_movementSpeed;
         public float RotationSpeed => this.m_rotationSpeed;
         public float DashDistance => this.m_dashDistance;
         public int DashFramesCooldown => this.m_dashFramesCooldown;
         public int ShootFramesCooldown => this.m_shootFramesCooldown;
         public GameObject ProjectilePrefab => this.m_projectilePrefab;
+        public int AttackDamage => this.m_attackDamage;
+        public int Defense => this.m_defense;
+        public ResourceData HealthData => this.m_healthData;
 
     }
 }

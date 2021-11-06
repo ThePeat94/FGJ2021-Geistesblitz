@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 4820235825151404047}
   - component: {fileID: 4820235825151404044}
   - component: {fileID: 4820235825151404045}
-  m_Layer: 3
+  m_Layer: 0
   m_Name: Sphere (1)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -108,7 +108,7 @@ GameObject:
   - component: {fileID: 4820235825461705274}
   - component: {fileID: 4820235825461705275}
   - component: {fileID: 4820235825461705272}
-  m_Layer: 3
+  m_Layer: 0
   m_Name: Sphere
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -204,7 +204,7 @@ GameObject:
   - component: {fileID: 4820235825602457518}
   - component: {fileID: 4820235825602457519}
   - component: {fileID: 4820235825602457517}
-  m_Layer: 3
+  m_Layer: 0
   m_Name: Capsule
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -306,7 +306,8 @@ GameObject:
   - component: {fileID: 4820235826046086687}
   - component: {fileID: 4820235826046086686}
   - component: {fileID: 4820235826046086681}
-  m_Layer: 3
+  - component: {fileID: 690026935}
+  m_Layer: 0
   m_Name: Player
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -342,7 +343,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e18686687f47980489a3c2d9d17ba1b6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_playerData: {fileID: 11400000, guid: 6361c79c9e1296948bccbefc89e3fc96, type: 2}
 --- !u!114 &4820235826046086675
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -419,5 +419,17 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_hitableLayers:
     serializedVersion: 2
-    m_Bits: 0
-  m_playerData: {fileID: 11400000, guid: 6361c79c9e1296948bccbefc89e3fc96, type: 2}
+    m_Bits: 1
+--- !u!114 &690026935
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4820235826046086672}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 06783da89c2b4c9db56b20fec804ca27, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_initialPlayerData: {fileID: 11400000, guid: 6361c79c9e1296948bccbefc89e3fc96, type: 2}

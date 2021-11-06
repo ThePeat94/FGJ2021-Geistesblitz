@@ -9,9 +9,9 @@ namespace UnityTemplateProjects
     public class PlayerDashController : MonoBehaviour
     {
         [SerializeField] private LayerMask m_hitableLayers;
-        [SerializeField] private PlayerData m_playerData;
         
         private InputProcessor m_inputProcessor;
+        private PlayerStatsController m_playerStatsController;
         private int m_currentDashFrameCooldown;
         
         private Vector3 m_currentDashTarget;
@@ -22,7 +22,8 @@ namespace UnityTemplateProjects
         private void Awake()
         {
             this.m_inputProcessor = this.GetComponent<InputProcessor>();
-            this.m_currentDashFrameCooldown = this.m_playerData.DashFramesCooldown;
+            this.m_playerStatsController = this.GetComponent<PlayerStatsController>();
+            this.m_currentDashFrameCooldown = this.m_playerStatsController.CurrentDashFramesCooldown;
         }
 
         private void Update()
@@ -37,7 +38,7 @@ namespace UnityTemplateProjects
         {
             var forwardMovement = this.transform.forward * this.m_inputProcessor.Movement.y;
             var sideMovement = this.transform.right * this.m_inputProcessor.Movement.x;
-            var dashTarget = Vector3.Lerp(forwardMovement, sideMovement, 0.5f).normalized * this.m_playerData.DashDistance;
+            var dashTarget = Vector3.Lerp(forwardMovement, sideMovement, 0.5f).normalized * this.m_playerStatsController.CurrentDashDistance;
             dashTarget.y = 0f;
             this.m_currentDashTarget = this.transform.position + dashTarget;
             this.m_dashCoroutine = this.StartCoroutine(this.PerformDash());
@@ -59,16 +60,16 @@ namespace UnityTemplateProjects
 
         private void FixedUpdate()
         {
-            if (this.m_currentDashFrameCooldown <= this.m_playerData.DashFramesCooldown && this.m_dashCoroutine == null)
+            if (this.m_currentDashFrameCooldown <= this.m_playerStatsController.CurrentDashFramesCooldown && this.m_dashCoroutine == null)
                 this.m_currentDashFrameCooldown++;
         }
 
         private bool CanDash() => 
              !Physics.Raycast(this.transform.position, 
                  this.m_inputProcessor.Movement.ToXZVector(), 
-                 this.m_playerData.DashDistance, 
+                 this.m_playerStatsController.CurrentDashDistance, 
                  1 << this.m_hitableLayers) &&
-             this.m_currentDashFrameCooldown > this.m_playerData.DashFramesCooldown;
+             this.m_currentDashFrameCooldown > this.m_playerStatsController.CurrentDashFramesCooldown;
         
     }
 }
