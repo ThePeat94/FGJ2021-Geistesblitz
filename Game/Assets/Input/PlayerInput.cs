@@ -57,6 +57,14 @@ public class @PlayerInput : IInputActionCollection, IDisposable
                     ""expectedControlType"": ""Button"",
                     ""processors"": """",
                     ""interactions"": """"
+                },
+                {
+                    ""name"": ""MouseTracking"",
+                    ""type"": ""Value"",
+                    ""id"": ""2befe50c-0e17-4440-a633-01f16902df48"",
+                    ""expectedControlType"": ""Vector2"",
+                    ""processors"": """",
+                    ""interactions"": """"
                 }
             ],
             ""bindings"": [
@@ -158,6 +166,17 @@ public class @PlayerInput : IInputActionCollection, IDisposable
                     ""action"": ""Dash"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""4882b177-5989-4f56-9d65-72e0d0291b27"",
+                    ""path"": ""<Mouse>/position"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""MouseTracking"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
                 }
             ]
         }
@@ -171,6 +190,7 @@ public class @PlayerInput : IInputActionCollection, IDisposable
         m_Actions_Inspect = m_Actions.FindAction("Inspect", throwIfNotFound: true);
         m_Actions_Shoot = m_Actions.FindAction("Shoot", throwIfNotFound: true);
         m_Actions_Dash = m_Actions.FindAction("Dash", throwIfNotFound: true);
+        m_Actions_MouseTracking = m_Actions.FindAction("MouseTracking", throwIfNotFound: true);
     }
 
     public void Dispose()
@@ -225,6 +245,7 @@ public class @PlayerInput : IInputActionCollection, IDisposable
     private readonly InputAction m_Actions_Inspect;
     private readonly InputAction m_Actions_Shoot;
     private readonly InputAction m_Actions_Dash;
+    private readonly InputAction m_Actions_MouseTracking;
     public struct ActionsActions
     {
         private @PlayerInput m_Wrapper;
@@ -234,6 +255,7 @@ public class @PlayerInput : IInputActionCollection, IDisposable
         public InputAction @Inspect => m_Wrapper.m_Actions_Inspect;
         public InputAction @Shoot => m_Wrapper.m_Actions_Shoot;
         public InputAction @Dash => m_Wrapper.m_Actions_Dash;
+        public InputAction @MouseTracking => m_Wrapper.m_Actions_MouseTracking;
         public InputActionMap Get() { return m_Wrapper.m_Actions; }
         public void Enable() { Get().Enable(); }
         public void Disable() { Get().Disable(); }
@@ -258,6 +280,9 @@ public class @PlayerInput : IInputActionCollection, IDisposable
                 @Dash.started -= m_Wrapper.m_ActionsActionsCallbackInterface.OnDash;
                 @Dash.performed -= m_Wrapper.m_ActionsActionsCallbackInterface.OnDash;
                 @Dash.canceled -= m_Wrapper.m_ActionsActionsCallbackInterface.OnDash;
+                @MouseTracking.started -= m_Wrapper.m_ActionsActionsCallbackInterface.OnMouseTracking;
+                @MouseTracking.performed -= m_Wrapper.m_ActionsActionsCallbackInterface.OnMouseTracking;
+                @MouseTracking.canceled -= m_Wrapper.m_ActionsActionsCallbackInterface.OnMouseTracking;
             }
             m_Wrapper.m_ActionsActionsCallbackInterface = instance;
             if (instance != null)
@@ -277,6 +302,9 @@ public class @PlayerInput : IInputActionCollection, IDisposable
                 @Dash.started += instance.OnDash;
                 @Dash.performed += instance.OnDash;
                 @Dash.canceled += instance.OnDash;
+                @MouseTracking.started += instance.OnMouseTracking;
+                @MouseTracking.performed += instance.OnMouseTracking;
+                @MouseTracking.canceled += instance.OnMouseTracking;
             }
         }
     }
@@ -288,5 +316,6 @@ public class @PlayerInput : IInputActionCollection, IDisposable
         void OnInspect(InputAction.CallbackContext context);
         void OnShoot(InputAction.CallbackContext context);
         void OnDash(InputAction.CallbackContext context);
+        void OnMouseTracking(InputAction.CallbackContext context);
     }
 }

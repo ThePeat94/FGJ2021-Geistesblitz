@@ -11,6 +11,7 @@ public class InputProcessor : MonoBehaviour
     private Vector2 m_movementInput;
 
     public Vector2 Movement => this.m_movementInput.normalized;
+    public Vector2 MouseScreenPosition { get; private set; }
     public bool InteractTriggered => this.m_playerInput.Actions.Interact.triggered;
     public bool InspectTriggered => this.m_playerInput.Actions.Inspect.triggered;
     public bool ShootTriggered { get; private set; }
@@ -41,6 +42,7 @@ public class InputProcessor : MonoBehaviour
     private void Update()
     {
         this.m_movementInput = this.m_playerInput.Actions.Move.ReadValue<Vector2>();
+        this.MouseScreenPosition = this.m_playerInput.Actions.MouseTracking.ReadValue<Vector2>();
     }
 
     private void OnDisable()

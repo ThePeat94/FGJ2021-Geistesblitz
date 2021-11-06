@@ -5,6 +5,7 @@ using System.Linq;
 using System.Runtime.CompilerServices;
 using Scriptables;
 using UI;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityTemplateProjects;
 
@@ -13,6 +14,7 @@ public class PlayerMovementController : MonoBehaviour
     private static PlayerMovementController s_instance;
 
     [SerializeField] private PlayerData m_playerData;
+    [SerializeField] private GameObject m_funnySphere;
 
     private Vector3 m_moveDirection;
     private CharacterController m_characterController;
@@ -20,6 +22,7 @@ public class PlayerMovementController : MonoBehaviour
     private Animator m_animator;
     private GameObject m_currentInteractable;
     private PlayerDashController m_playerDashController;
+    private Vector3 m_mousePlayerPosition;
     
     private static readonly int s_isWalkingHash = Animator.StringToHash("IsWalking");
 
@@ -49,36 +52,34 @@ public class PlayerMovementController : MonoBehaviour
     {
         if (this.m_playerDashController.IsDashing) return;
         
+        var mouseRay = Camera.main.ScreenPointToRay(this.m_inputProcessor.MouseScreenPosition);
+        var p = new Plane(Vector3.up, this.transform.position);
+        if( p.Raycast( mouseRay, out float hitDist) ){
+            Vector3 hitPoint = mouseRay.GetPoint(hitDist);
+            this.m_mousePlayerPosition = hitPoint;
+        }
         this.Move();
         this.Rotate();
     }
 
     private void LateUpdate()
     {
-        this.UpdateAnimator();
+        // this.UpdateAnimator();
     }
     
     protected void Move()
     {
-        this.m_moveDirection = new Vector3(this.m_inputProcessor.Movement.x, Physics.gravity.y, this.m_inputProcessor.Movement.y);
+        var forwardMovement = this.transform.forward * this.m_inputProcessor.Movement.y;
+        var sideMovement = this.transform.right * this.m_inputProcessor.Movement.x;
+
+        this.m_moveDirection = Vector3.Lerp(forwardMovement, sideMovement, 0.5f).normalized;
+        this.m_moveDirection.y = Physics.gravity.y;
         this.m_characterController.Move(this.m_moveDirection * Time.deltaTime * this.m_playerData.MovementSpeed);
     }
         
     private void Rotate()
     {
-        var targetDir = this.m_moveDirection;
-        targetDir.y = 0f;
-
-        if (targetDir == Vector3.zero)
-            targetDir = this.transform.forward;
-    
-        this.RotateTowards(targetDir);
-    }
-
-    private void RotateTowards(Vector3 dir)
-    {
-        var lookRotation = Quaternion.LookRotation(dir.normalized);
-        this.transform.rotation = Quaternion.Slerp(this.transform.rotation, lookRotation, this.m_playerData.RotationSpeed * Time.deltaTime);
+        this.transform.LookAt(this.m_mousePlayerPosition);
     }
 
     private void UpdateAnimator()
