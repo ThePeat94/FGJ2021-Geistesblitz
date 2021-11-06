@@ -1,9 +1,11 @@
 
+using System;
 using EventArgs;
 using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.AI;
 using UnityEngine.UI;
+using Random = UnityEngine.Random;
 
 public class EnemyRanged : MonoBehaviour
 {
@@ -34,7 +36,10 @@ public class EnemyRanged : MonoBehaviour
     {
         m_player = PlayerMovementController.Instance.transform;
         m_agent = GetComponent<NavMeshAgent>();
-        
+    }
+
+    private void Start()
+    {
         this.GetComponent<HealthController>().HealthDownToZero += this.OnHealthDownToZero;
         this.GetComponent<HealthController>().GetResourceController().ResourceValueChanged += this.OnHealthChanged;
         this.GetComponent<HealthController>().GetResourceController().MaxValueChanged += this.OnMaxHealthChanged;
