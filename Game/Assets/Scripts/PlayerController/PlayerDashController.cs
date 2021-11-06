@@ -68,7 +68,7 @@ namespace UnityTemplateProjects
              !Physics.Raycast(this.transform.position, 
                  this.m_inputProcessor.Movement.ToXZVector(), 
                  this.m_playerStatsController.CurrentDashDistance, 
-                 1 << this.m_hitableLayers) &&
+                 this.m_hitableLayers) &&
              this.m_currentDashFrameCooldown > this.m_playerStatsController.CurrentDashFramesCooldown;
         
     }

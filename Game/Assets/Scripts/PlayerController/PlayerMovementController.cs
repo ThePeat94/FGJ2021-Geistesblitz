@@ -68,11 +68,7 @@ public class PlayerMovementController : MonoBehaviour
     
     protected void Move()
     {
-        var forwardMovement = this.transform.forward * this.m_inputProcessor.Movement.y;
-        var sideMovement = this.transform.right * this.m_inputProcessor.Movement.x;
-
-        this.m_moveDirection = Vector3.Lerp(forwardMovement, sideMovement, 0.5f).normalized;
-        this.m_moveDirection.y = Physics.gravity.y;
+        this.m_moveDirection = new Vector3(this.m_inputProcessor.Movement.x, Physics.gravity.y, this.m_inputProcessor.Movement.y);
         this.m_characterController.Move(this.m_moveDirection * Time.deltaTime * this.m_playerStatsController.CurrentMovementSpeed);
     }
         

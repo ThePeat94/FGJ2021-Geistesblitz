@@ -9,9 +9,6 @@ public partial class EnemyMelee : MonoBehaviour
     private Transform m_player;
 
     [SerializeField] private LayerMask m_whatIsGround, m_whatIsPlayer;
-
-    [SerializeField] private float m_health;
-
     //Patroling
     private Vector3 m_walkPoint;
     bool walkPointSet;
@@ -28,6 +25,8 @@ public partial class EnemyMelee : MonoBehaviour
     {
         m_player = PlayerMovementController.Instance.transform;
         m_agent = GetComponent<NavMeshAgent>();
+        
+        GetComponent<HealthController>().HealthDownToZero += OnHealthDownToZero;
     }
 
     private void Update()
@@ -35,7 +34,6 @@ public partial class EnemyMelee : MonoBehaviour
         //Check for sight and attack range
         m_playerInSightRange = Physics.CheckSphere(transform.position, m_sightRange, m_whatIsPlayer);
         m_playerInAttackRange = Physics.CheckSphere(transform.position, m_attackRange, m_whatIsPlayer);
-        Debug.Log(m_playerInAttackRange);
         if (!m_playerInSightRange && !m_playerInAttackRange) Patroling();
         if (m_playerInSightRange && !m_playerInAttackRange) ChasePlayer();
         if (m_playerInAttackRange && m_playerInSightRange) AttackPlayer();
@@ -81,7 +79,7 @@ public partial class EnemyMelee : MonoBehaviour
         if (!alreadyAttacked)
         {
             // MELEE ATTACK
-            m_player.SendMessage("TakeDamage", 1);
+            m_player.GetComponent<HealthController>().TakeDamage(1);
             
             alreadyAttacked = true;
             Invoke(nameof(ResetAttack), m_timeBetweenAttacks);
@@ -94,12 +92,17 @@ public partial class EnemyMelee : MonoBehaviour
 
     public void TakeDamage(int damage)
     {
-        m_health -= damage;
-
-        if (m_health <= 0) Invoke(nameof(DestroyEnemy), 0.5f);
+        this.GetComponent<HealthController>().TakeDamage(damage);
     }
+    
+    private void OnHealthDownToZero(object sender, System.EventArgs e)
+    {
+        this.DestroyEnemy();
+    }
+    
     private void DestroyEnemy()
     {
+        this.GetComponent<HealthController>().HealthDownToZero -= this.OnHealthDownToZero;
         Destroy(gameObject);
     }
 }
