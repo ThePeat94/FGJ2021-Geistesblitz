@@ -1,0 +1,6 @@
+The music was created within Studio One 5.
+Instruments from Studio One 5 Sound Library and LABS:
+https://labs.spitfireaudio.com/#type=&search=&new=true
+
+SFX used:
+-bat wings https://freesfx.co.uk/sfx/bat-wings
