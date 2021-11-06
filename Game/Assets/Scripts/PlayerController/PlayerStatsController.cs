@@ -17,6 +17,7 @@ namespace UnityTemplateProjects
         public int CurrentAttackDamage { get; set; }
         public int CurrentDefense { get; set; }
         public HealthController HealthController => this.m_healthController;
+        public int CurrentSpreadShotCount { get; set; }
 
         private void Awake()
         {
@@ -26,6 +27,7 @@ namespace UnityTemplateProjects
             this.CurrentAttackDamage = this.m_initialPlayerData.AttackDamage;
             this.CurrentDashFramesCooldown = this.m_initialPlayerData.DashFramesCooldown;
             this.CurrentShootFramesCooldown = this.m_initialPlayerData.ShootFramesCooldown;
+            this.CurrentSpreadShotCount = this.m_initialPlayerData.SpreadShotCount;
         }
     }
 }
