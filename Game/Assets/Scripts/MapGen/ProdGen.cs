@@ -15,7 +15,12 @@ namespace net6test.MapGenerator
 
         public int Size(int s, int threshold) => random.Next(s - threshold * 2) + threshold;
         public int Range(int a, int b, int threshold) => a + Size(b - a, threshold);
-        public T Select<T>(List<T> l) => l[random.Next(l.Count)];
+        public T Select<T>(List<T> l)
+        {
+            if (l.Count == 0) return default(T);
+            return l[random.Next(l.Count)];
+        }
+
         public T Select<T>(IEnumerable<T> e)
         {
             var l = e.ToList();

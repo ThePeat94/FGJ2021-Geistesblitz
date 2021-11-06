@@ -4,6 +4,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using Unity.AI.Navigation;
+using System.Linq;
 
 [RequireComponent(typeof(MeshFilter))]
 [RequireComponent(typeof(MeshCollider))]
@@ -13,12 +14,18 @@ public class MeshGenerator : MonoBehaviour
     public int Width = 64;
     public int Height = 64;
     public int Threshold = 6;
+    public float Scale = 2;
+    public GameObject Player;
+    public List<GameObject> Enemies;
 
     Mesh mesh;
 
     List<Vector3> vertices = new List<Vector3>();
     List<int> triangles = new List<int>();
+    List<GameObject> enemiesSpawned = new List<GameObject>();
     private LevelMap map;
+    private ProdGen pg;
+    private MapGen mg;
 
     // Start is called before the first frame update
     void Start()
@@ -27,17 +34,19 @@ public class MeshGenerator : MonoBehaviour
     }
 
     void OnValidate()
-    {
+    {        
         Generate();
     }
 
     private void Generate()
     {
+        enemiesSpawned.ForEach(x => DestroyImmediate(x));
+        enemiesSpawned.Clear();
         vertices.Clear();
         triangles.Clear();
 
-        var pg = new ProdGen(Seed);
-        var mg = new MapGen(pg, Width, Height, Threshold);
+        pg = new ProdGen(Seed);
+        mg = new MapGen(pg, Width, Height, Threshold);
         this.map = mg.Map;
 
         mesh = new Mesh();
@@ -47,6 +56,35 @@ public class MeshGenerator : MonoBehaviour
         UpdateMesh();
         GetComponent<NavMeshSurface>().BuildNavMesh();
 
+        if (Player != null)
+        {
+            var c = mg.StartRoom.Center();
+            Player.transform.position = new Vector3(c.X * Scale, 0, c.Y * Scale);
+        }
+
+        if(Enemies.Count > 0)
+        {
+            foreach (var r in mg.Rooms.Where(x => x.IsEnabled))
+            {
+                if (r == mg.StartRoom) continue;
+
+                var c = r.Center();
+                SpawnEnemy(c.X, c.Y);
+                
+                //var el = map[c.X, c.Y];
+                //var sg = map.SubGrid(r.Quad.X, r.Quad.Y, r.Quad.Width, r.Quad.Height);
+                
+            }
+        }
+
+    }
+
+    private void SpawnEnemy(int x, int y)
+    {
+        var en = pg.Select(Enemies);
+        var inst = Instantiate(en);
+        inst.transform.position = new Vector3(x * Scale, 0, y * Scale);
+        enemiesSpawned.Add(inst);
     }
 
     private void UpdateMesh()
@@ -63,14 +101,17 @@ public class MeshGenerator : MonoBehaviour
     {
         map.ForEachXY((x,y,v) =>
         {
+            x *= (int)Scale;
+            y *= (int)Scale;
+
             if(v != LevelElement.Wall)
             {
                 var last = vertices.Count;
 
                 vertices.Add(new Vector3(x, 0, y));
-                vertices.Add(new Vector3(x, 0, y+1));
-                vertices.Add(new Vector3(x+1, 0, y));
-                vertices.Add(new Vector3(x+1, 0, y+1));
+                vertices.Add(new Vector3(x, 0, y+Scale));
+                vertices.Add(new Vector3(x+Scale, 0, y));
+                vertices.Add(new Vector3(x+Scale, 0, y+Scale));
 
                 triangles.Add(last);
                 triangles.Add(last+1);
