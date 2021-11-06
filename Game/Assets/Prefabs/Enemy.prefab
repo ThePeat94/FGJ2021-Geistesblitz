@@ -108,9 +108,8 @@ GameObject:
   - component: {fileID: 6862941083598600683}
   - component: {fileID: 6862941083598600684}
   - component: {fileID: 6862941083598600685}
-  - component: {fileID: 6862941083598600686}
   - component: {fileID: 6862941083598600687}
-  - component: {fileID: 1345621686257402410}
+  - component: {fileID: 4080588965110254009}
   m_Layer: 0
   m_Name: Enemy
   m_TagString: Untagged
@@ -197,31 +196,6 @@ CapsuleCollider:
   m_Height: 2
   m_Direction: 1
   m_Center: {x: 0, y: 0, z: 0}
---- !u!114 &6862941083598600686
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6862941083598600672}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 4b9f6b780124d4fb0bd9249ea4981080, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  m_agent: {fileID: 6862941083598600687}
-  m_whatIsGround:
-    serializedVersion: 2
-    m_Bits: 1
-  m_whatIsPlayer:
-    serializedVersion: 2
-    m_Bits: 8
-  m_health: 3
-  m_walkPointRange: 10
-  m_timeBetweenAttacks: 1
-  m_projectile: {fileID: 6733297148037201929, guid: 5faf2a87def3f5a48a3a0dfb7cc8d6d1, type: 3}
-  m_sightRange: 10
-  m_attackRange: 7
 --- !u!195 &6862941083598600687
 NavMeshAgent:
   m_ObjectHideFlags: 0
@@ -244,7 +218,7 @@ NavMeshAgent:
   m_BaseOffset: 1
   m_WalkableMask: 4294967295
   m_ObstacleAvoidanceType: 4
---- !u!114 &1345621686257402410
+--- !u!114 &4080588965110254009
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -253,19 +227,19 @@ MonoBehaviour:
   m_GameObject: {fileID: 6862941083598600672}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 47316b68228b4af3bd4044b0f3e62426, type: 3}
+  m_Script: {fileID: 11500000, guid: af356404fd1ee48a59be343f7d4aa4c9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_agent: {fileID: 0}
+  m_agent: {fileID: 6862941083598600687}
   m_whatIsGround:
     serializedVersion: 2
-    m_Bits: 0
+    m_Bits: 1
   m_whatIsPlayer:
     serializedVersion: 2
-    m_Bits: 0
-  m_health: 0
-  m_walkPointRange: 0
-  m_timeBetweenAttacks: 0
-  m_projectile: {fileID: 0}
-  m_sightRange: 0
-  m_attackRange: 0
+    m_Bits: 8
+  m_health: 3
+  m_walkPointRange: 10
+  m_timeBetweenAttacks: 1
+  m_projectile: {fileID: 6733297148037201929, guid: 5faf2a87def3f5a48a3a0dfb7cc8d6d1, type: 3}
+  m_sightRange: 15
+  m_attackRange: 7

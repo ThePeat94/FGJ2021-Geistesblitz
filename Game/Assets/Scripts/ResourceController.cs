@@ -55,7 +55,11 @@ public class ResourceController
 
     public void Add(float value)
     {
-        this.m_currentValue += value;
+        if (this.m_currentValue + value > this.MaxValue)
+            this.m_currentValue = this.MaxValue;
+        else
+            this.m_currentValue += value;
+        
         this.m_resourceValueChanged?.Invoke(this, new ResourceValueChangedEventArgs(this.m_currentValue));
     }
 

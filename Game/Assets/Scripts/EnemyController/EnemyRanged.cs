@@ -36,7 +36,6 @@ public class EnemyRanged : MonoBehaviour
         //Check for sight and attack range
         m_playerInSightRange = Physics.CheckSphere(transform.position, m_sightRange, m_whatIsPlayer);
         m_playerInAttackRange = Physics.CheckSphere(transform.position, m_attackRange, m_whatIsPlayer);
-        Debug.Log(m_playerInAttackRange);
         if (!m_playerInSightRange && !m_playerInAttackRange) Patroling();
         if (m_playerInSightRange && !m_playerInAttackRange) ChasePlayer();
         if (m_playerInAttackRange && m_playerInSightRange) AttackPlayer();
