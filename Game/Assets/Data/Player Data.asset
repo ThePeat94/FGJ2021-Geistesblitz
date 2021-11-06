@@ -21,3 +21,4 @@ MonoBehaviour:
   m_attackDamage: 10
   m_defense: 1
   m_healthData: {fileID: 0}
+  m_spreadShotCount: 1
