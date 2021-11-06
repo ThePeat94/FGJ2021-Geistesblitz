@@ -6,10 +6,11 @@ using System.Runtime.CompilerServices;
 using Scriptables;
 using UI;
 using UnityEngine;
+using UnityTemplateProjects;
 
-public class PlayerController : MonoBehaviour
+public class PlayerMovementController : MonoBehaviour
 {
-    private static PlayerController s_instance;
+    private static PlayerMovementController s_instance;
 
     [SerializeField] private PlayerData m_playerData;
 
@@ -18,12 +19,13 @@ public class PlayerController : MonoBehaviour
     private InputProcessor m_inputProcessor;
     private Animator m_animator;
     private GameObject m_currentInteractable;
+    private PlayerDashController m_playerDashController;
     
     private static readonly int s_isWalkingHash = Animator.StringToHash("IsWalking");
 
-    public static PlayerController Instance => s_instance;
-    
-    
+    public static PlayerMovementController Instance => s_instance;
+
+
     private void Awake()
     {
         if (s_instance == null)
@@ -37,6 +39,7 @@ public class PlayerController : MonoBehaviour
         }
         
         this.m_inputProcessor = this.GetComponent<InputProcessor>();
+        this.m_playerDashController = this.GetComponent<PlayerDashController>();
         this.m_characterController = this.GetComponent<CharacterController>();
         this.m_animator = this.GetComponent<Animator>();
     }
@@ -44,6 +47,8 @@ public class PlayerController : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        if (this.m_playerDashController.IsDashing) return;
+        
         this.Move();
         this.Rotate();
     }

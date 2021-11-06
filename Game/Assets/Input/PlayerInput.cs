@@ -41,6 +41,22 @@ public class @PlayerInput : IInputActionCollection, IDisposable
                     ""expectedControlType"": ""Button"",
                     ""processors"": """",
                     ""interactions"": """"
+                },
+                {
+                    ""name"": ""Shoot"",
+                    ""type"": ""Button"",
+                    ""id"": ""ff2b652a-8e80-43b8-8204-37a942c8c813"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """"
+                },
+                {
+                    ""name"": ""Dash"",
+                    ""type"": ""Button"",
+                    ""id"": ""078352b1-a669-49c8-ae36-1f5764643352"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """"
                 }
             ],
             ""bindings"": [
@@ -120,6 +136,28 @@ public class @PlayerInput : IInputActionCollection, IDisposable
                     ""action"": ""Inspect"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""ba39a14c-6acf-43a6-8474-b5d362fb3756"",
+                    ""path"": ""<Mouse>/leftButton"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Shoot"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""caebd682-1861-46aa-8a68-0acd8b51531e"",
+                    ""path"": ""<Keyboard>/space"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Dash"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
                 }
             ]
         }
@@ -131,6 +169,8 @@ public class @PlayerInput : IInputActionCollection, IDisposable
         m_Actions_Move = m_Actions.FindAction("Move", throwIfNotFound: true);
         m_Actions_Interact = m_Actions.FindAction("Interact", throwIfNotFound: true);
         m_Actions_Inspect = m_Actions.FindAction("Inspect", throwIfNotFound: true);
+        m_Actions_Shoot = m_Actions.FindAction("Shoot", throwIfNotFound: true);
+        m_Actions_Dash = m_Actions.FindAction("Dash", throwIfNotFound: true);
     }
 
     public void Dispose()
@@ -183,6 +223,8 @@ public class @PlayerInput : IInputActionCollection, IDisposable
     private readonly InputAction m_Actions_Move;
     private readonly InputAction m_Actions_Interact;
     private readonly InputAction m_Actions_Inspect;
+    private readonly InputAction m_Actions_Shoot;
+    private readonly InputAction m_Actions_Dash;
     public struct ActionsActions
     {
         private @PlayerInput m_Wrapper;
@@ -190,6 +232,8 @@ public class @PlayerInput : IInputActionCollection, IDisposable
         public InputAction @Move => m_Wrapper.m_Actions_Move;
         public InputAction @Interact => m_Wrapper.m_Actions_Interact;
         public InputAction @Inspect => m_Wrapper.m_Actions_Inspect;
+        public InputAction @Shoot => m_Wrapper.m_Actions_Shoot;
+        public InputAction @Dash => m_Wrapper.m_Actions_Dash;
         public InputActionMap Get() { return m_Wrapper.m_Actions; }
         public void Enable() { Get().Enable(); }
         public void Disable() { Get().Disable(); }
@@ -208,6 +252,12 @@ public class @PlayerInput : IInputActionCollection, IDisposable
                 @Inspect.started -= m_Wrapper.m_ActionsActionsCallbackInterface.OnInspect;
                 @Inspect.performed -= m_Wrapper.m_ActionsActionsCallbackInterface.OnInspect;
                 @Inspect.canceled -= m_Wrapper.m_ActionsActionsCallbackInterface.OnInspect;
+                @Shoot.started -= m_Wrapper.m_ActionsActionsCallbackInterface.OnShoot;
+                @Shoot.performed -= m_Wrapper.m_ActionsActionsCallbackInterface.OnShoot;
+                @Shoot.canceled -= m_Wrapper.m_ActionsActionsCallbackInterface.OnShoot;
+                @Dash.started -= m_Wrapper.m_ActionsActionsCallbackInterface.OnDash;
+                @Dash.performed -= m_Wrapper.m_ActionsActionsCallbackInterface.OnDash;
+                @Dash.canceled -= m_Wrapper.m_ActionsActionsCallbackInterface.OnDash;
             }
             m_Wrapper.m_ActionsActionsCallbackInterface = instance;
             if (instance != null)
@@ -221,6 +271,12 @@ public class @PlayerInput : IInputActionCollection, IDisposable
                 @Inspect.started += instance.OnInspect;
                 @Inspect.performed += instance.OnInspect;
                 @Inspect.canceled += instance.OnInspect;
+                @Shoot.started += instance.OnShoot;
+                @Shoot.performed += instance.OnShoot;
+                @Shoot.canceled += instance.OnShoot;
+                @Dash.started += instance.OnDash;
+                @Dash.performed += instance.OnDash;
+                @Dash.canceled += instance.OnDash;
             }
         }
     }
@@ -230,5 +286,7 @@ public class @PlayerInput : IInputActionCollection, IDisposable
         void OnMove(InputAction.CallbackContext context);
         void OnInteract(InputAction.CallbackContext context);
         void OnInspect(InputAction.CallbackContext context);
+        void OnShoot(InputAction.CallbackContext context);
+        void OnDash(InputAction.CallbackContext context);
     }
 }
