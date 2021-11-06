@@ -22,6 +22,7 @@ namespace UnityTemplateProjects
         private void Awake()
         {
             this.m_inputProcessor = this.GetComponent<InputProcessor>();
+            this.m_currentDashFrameCooldown = this.m_playerData.DashFramesCooldown;
         }
 
         private void Update()
