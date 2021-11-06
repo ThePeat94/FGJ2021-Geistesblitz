@@ -1,7 +1,9 @@
 
+using EventArgs;
 using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.AI;
+using UnityEngine.UI;
 
 public partial class EnemyMelee : MonoBehaviour
 {
@@ -21,12 +23,17 @@ public partial class EnemyMelee : MonoBehaviour
     [SerializeField] private float m_sightRange = 15, m_attackRange = 1;
     private bool m_playerInSightRange, m_playerInAttackRange;
 
+    //Health Bar
+    [SerializeField] public Slider m_healthBar;
+    
     private void Awake()
     {
         m_player = PlayerMovementController.Instance.transform;
         m_agent = GetComponent<NavMeshAgent>();
         
-        GetComponent<HealthController>().HealthDownToZero += OnHealthDownToZero;
+        this.GetComponent<HealthController>().HealthDownToZero += this.OnHealthDownToZero;
+        this.GetComponent<HealthController>().GetResourceController().ResourceValueChanged += this.OnHealthChanged;
+        this.GetComponent<HealthController>().GetResourceController().MaxValueChanged += this.OnMaxHealthChanged;
     }
 
     private void Update()
@@ -93,6 +100,16 @@ public partial class EnemyMelee : MonoBehaviour
     public void TakeDamage(int damage)
     {
         this.GetComponent<HealthController>().TakeDamage(damage);
+    }
+    
+    private void OnHealthChanged(object sender, ResourceValueChangedEventArgs e)
+    {
+        this.m_healthBar.value = (e.NewValue / this.GetComponent<HealthController>().GetResourceController().MaxValue);
+    }
+    
+    private void OnMaxHealthChanged(object sender, ResourceValueChangedEventArgs e)
+    {
+        this.m_healthBar.value = (this.GetComponent<HealthController>().GetResourceController().CurrentValue / e.NewValue);
     }
     
     private void OnHealthDownToZero(object sender, System.EventArgs e)

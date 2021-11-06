@@ -22,10 +22,11 @@ public class HealthController : MonoBehaviour
 
     public void TakeDamage(int value)
     {
-        if (!m_resourceController.UseResource(value))
-        {
-            Kill();
-        }
+        if (!this.m_resourceController.UseResource(value))
+            this.Kill();
+        
+        if (this.m_resourceController.CurrentValue <= 0)
+            this.Kill();
     }
 
     private void Kill()
@@ -42,5 +43,10 @@ public class HealthController : MonoBehaviour
     public void SetToFullHealth()
     {
         m_resourceController.ResetValue();
+    }
+
+    public ResourceController GetResourceController()
+    {
+        return this.m_resourceController;
     }
 }
