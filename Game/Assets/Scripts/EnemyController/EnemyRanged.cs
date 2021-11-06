@@ -29,6 +29,8 @@ public class EnemyRanged : MonoBehaviour
     {
         m_player = PlayerMovementController.Instance.transform;
         m_agent = GetComponent<NavMeshAgent>();
+        
+        GetComponent<HealthController>().HealthDownToZero += OnHealthDownToZero;
     }
 
     private void Update()
@@ -95,10 +97,14 @@ public class EnemyRanged : MonoBehaviour
 
     public void TakeDamage(int damage)
     {
-        m_health -= damage;
-
-        if (m_health <= 0) Invoke(nameof(DestroyEnemy), 0.5f);
+        this.GetComponent<HealthController>().TakeDamage(damage);
     }
+    
+    private void OnHealthDownToZero(object sender, System.EventArgs e)
+    {
+        this.DestroyEnemy();
+    }
+    
     private void DestroyEnemy()
     {
         Destroy(gameObject);

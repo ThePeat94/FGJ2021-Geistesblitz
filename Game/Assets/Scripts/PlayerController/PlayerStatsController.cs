@@ -8,7 +8,7 @@ namespace UnityTemplateProjects
     public class PlayerStatsController : MonoBehaviour
     {
         [SerializeField] private PlayerData m_initialPlayerData;
-
+        
         public float CurrentMovementSpeed { get; set; }
         public float CurrentDashDistance { get; set; }
         public int CurrentDashFramesCooldown { get; set; }

@@ -5,7 +5,6 @@ using UnityEngine;
 
 public class Projectile : MonoBehaviour
 {
-    
     public Vector3 ShootDirection { get; set; }
 
     private void Awake()
@@ -21,7 +20,9 @@ public class Projectile : MonoBehaviour
 
     private void OnTriggerEnter(Collider other)
     {
-        other.SendMessage("TakeDamage", 1);
+        if (!other.TryGetComponent(out HealthController playerHealthController)) return;
+        playerHealthController.TakeDamage(1);
+        
         Destroy(this.gameObject);
     }
 }
