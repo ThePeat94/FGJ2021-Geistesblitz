@@ -370,7 +370,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 26a0d47f133843e89f2535268b4fbe2f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_target: {fileID: 0}
 --- !u!1 &5695291135093689091
 GameObject:
   m_ObjectHideFlags: 0
@@ -569,7 +568,7 @@ MonoBehaviour:
   m_agent: {fileID: 6862941083598600687}
   m_whatIsGround:
     serializedVersion: 2
-    m_Bits: 1
+    m_Bits: 65
   m_whatIsPlayer:
     serializedVersion: 2
     m_Bits: 8

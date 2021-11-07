@@ -54,6 +54,12 @@ public class PlayerMovementController : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        if(this.m_inputProcessor.EscapeTriggered)
+        {
+            Application.Quit();
+            return;
+        }
+        
         if (this.m_isGameOver)
         {
             if (this.m_inputProcessor.RestartTriggered)

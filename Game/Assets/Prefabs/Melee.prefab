@@ -101,7 +101,7 @@ MonoBehaviour:
   m_agent: {fileID: 290064853064633141}
   m_whatIsGround:
     serializedVersion: 2
-    m_Bits: 1
+    m_Bits: 65
   m_whatIsPlayer:
     serializedVersion: 2
     m_Bits: 8

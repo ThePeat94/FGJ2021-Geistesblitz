@@ -8,6 +8,7 @@ namespace UnityTemplateProjects
     public class PlayerShootController : MonoBehaviour
     {
         [SerializeField] private PlayerData m_playerData;
+        [SerializeField] private Transform m_projectileSpawn;
         private InputProcessor m_inputProcessor;
         private int m_currentFramesCooldown;
 
@@ -57,7 +58,7 @@ namespace UnityTemplateProjects
             this.ShotHelper(0, 
                 Instantiate(
                     this.m_playerData.ProjectilePrefab, 
-                    this.transform.position + this.transform.forward.normalized, 
+                    this.m_projectileSpawn.position, 
                     this.transform.rotation
                 )
             );
@@ -73,14 +74,14 @@ namespace UnityTemplateProjects
                 this.ShotHelper(currentAngle, 
                     Instantiate(
                         this.m_playerData.ProjectilePrefab, 
-                        this.transform.position + this.transform.forward.normalized, 
+                        this.m_projectileSpawn.position, 
                         this.transform.rotation
                     )
                 );
                 this.ShotHelper(-currentAngle, 
                     Instantiate(
                         this.m_playerData.ProjectilePrefab, 
-                        this.transform.position + this.transform.forward.normalized, 
+                        this.m_projectileSpawn.position, 
                         this.transform.rotation
                     )
                 );
