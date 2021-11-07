@@ -87,6 +87,7 @@ public class MeshGenerator : MonoBehaviour
                 if (!spawn.IsEmpty)
                 {
                     SpawnEnemy(spawn.X, spawn.Y);
+                    r.POIs.Remove(spawn);
                 }
                 if(PowerUps.Count > 0)
                 {
@@ -311,9 +312,10 @@ public class MeshGenerator : MonoBehaviour
         while (spawned < amountToSpawn)
         {
             var rndPowerup = this.pg.Select(PowerUps);
-            var rndX = pg.Range(0, room.Quad.Width);
-            var rndY = pg.Range(0, room.Quad.Height);
-            var spawnedGO = Instantiate(rndPowerup, new Vector3((room.Quad.X + rndX) * this.Scale, 1f, (room.Quad.Y + rndY) * this.Scale), Quaternion.identity);            
+            var spawn = pg.Select(room.POIs);
+            if (spawn.IsEmpty) continue;
+            var spawnedGO = Instantiate(rndPowerup, new Vector3(spawn.X * this.Scale, 1f, spawn.Y * this.Scale), Quaternion.identity);
+            room.POIs.Remove(spawn);
             spawned++;
             this.spawnedPowerups.Add(spawnedGO);
         }
