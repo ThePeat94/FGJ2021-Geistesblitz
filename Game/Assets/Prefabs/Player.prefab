@@ -127,7 +127,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_hitableLayers:
     serializedVersion: 2
-    m_Bits: 1
+    m_Bits: 65
 --- !u!114 &690026935
 MonoBehaviour:
   m_ObjectHideFlags: 0

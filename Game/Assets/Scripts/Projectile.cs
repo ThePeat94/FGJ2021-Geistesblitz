@@ -18,12 +18,15 @@ public class Projectile : MonoBehaviour
     {
         this.transform.position += this.ShootDirection * Time.deltaTime * 20f;
     }
+    
 
     private void OnTriggerEnter(Collider other)
     {
-        if (!other.TryGetComponent(out HealthController playerHealthController) || this.Sender == other.gameObject) return;
-        playerHealthController.TakeDamage(1);
-        
+        if (other.TryGetComponent(out HealthController playerHealthController) && this.Sender != other.gameObject)
+        {
+            playerHealthController.TakeDamage(1);   
+        }
         Destroy(this.gameObject);
+
     }
 }
