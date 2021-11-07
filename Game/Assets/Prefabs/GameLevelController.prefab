@@ -44,3 +44,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_meshGenerator: {fileID: 0}
+  m_levelData:
+  - {fileID: 11400000, guid: 41f396cf9e6e741619f5b3a0959cdcb2, type: 2}
+  - {fileID: 11400000, guid: 21e67dd771404425eb5024ffc1d89cc7, type: 2}
+  - {fileID: 11400000, guid: bbbe2a34a8a2347a69f39c181bce9a21, type: 2}
+  - {fileID: 11400000, guid: bb583058c4b5d47229e3d21eb2b087be, type: 2}
+  - {fileID: 11400000, guid: 25418125bd8ba485fad31f7cc5ce8a18, type: 2}
+  - {fileID: 11400000, guid: 6226eb20c31e542ffafa558e11783fae, type: 2}
