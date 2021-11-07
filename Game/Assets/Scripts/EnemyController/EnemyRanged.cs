@@ -96,7 +96,9 @@ public class EnemyRanged : MonoBehaviour
         {
             var instantiatedProjectile = Instantiate(m_projectile);
             instantiatedProjectile.transform.position = this.transform.position + 2*this.transform.forward;
-            instantiatedProjectile.GetComponent<Projectile>().ShootDirection = this.transform.forward;
+            var projectile = instantiatedProjectile.GetComponent<Projectile>();
+            projectile.ShootDirection = this.transform.forward;
+            projectile.Sender = this.gameObject;
 
             alreadyAttacked = true;
             Invoke(nameof(ResetAttack), m_timeBetweenAttacks);
