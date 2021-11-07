@@ -54,7 +54,6 @@ namespace UI
         {
             this.m_attackUpgradeUi.IncreaseSlider();
         }
-
         
         public void ShowGameOverScreen()
         {
