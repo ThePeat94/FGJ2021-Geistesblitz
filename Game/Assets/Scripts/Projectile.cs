@@ -1,12 +1,12 @@
-using System;
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class Projectile : MonoBehaviour
 {
     public Vector3 ShootDirection { get; set; }
     public GameObject Sender { get; set; }
+    
+    [SerializeField] private AudioClip m_dyingSound;
+    [SerializeField] private AudioSource m_sfxPlayer;
 
     private void Awake()
     {
@@ -30,6 +30,15 @@ public class Projectile : MonoBehaviour
         {
             playerHealthController.TakeDamage(1);   
         }
+
+        if (this.m_dyingSound != null)
+        {
+            this.m_sfxPlayer.clip = this.m_dyingSound;
+            this.m_sfxPlayer.loop = false;
+            this.m_sfxPlayer.Play();    
+        }
+        
+        
         Destroy(this.gameObject);
 
     }
