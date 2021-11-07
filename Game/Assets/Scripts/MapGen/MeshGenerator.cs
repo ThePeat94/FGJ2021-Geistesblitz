@@ -17,6 +17,7 @@ public class MeshGenerator : MonoBehaviour
     public float Scale = 2;
     public GameObject Player;
     public List<GameObject> Enemies;
+    public List<GameObject> PowerUps;
 
     Mesh mesh;
 
@@ -26,6 +27,9 @@ public class MeshGenerator : MonoBehaviour
     private LevelMap map;
     private ProdGen pg;
     private MapGen mg;
+    
+    private const float ONE_POWERUP_CHANCE = 0.25f;
+    private const float TWO_POWERUPS_CHANCE = 0.1f;
 
     // Start is called before the first frame update
     void Start()
@@ -33,13 +37,15 @@ public class MeshGenerator : MonoBehaviour
         Generate();
     }
 
-    void OnValidate()
-    {        
-        Generate();
-    }
+    // void OnValidate()
+    // {        
+    //     Generate();
+    // }
 
+    [ContextMenu("ProdGen/Generate")]
     private void Generate()
     {
+        this.Seed = UnityEngine.Random.Range(int.MinValue, int.MaxValue);
         enemiesSpawned.ForEach(x => DestroyImmediate(x));
         enemiesSpawned.Clear();
         vertices.Clear();
@@ -70,10 +76,7 @@ public class MeshGenerator : MonoBehaviour
 
                 var c = r.Center();
                 SpawnEnemy(c.X, c.Y);
-                
-                //var el = map[c.X, c.Y];
-                //var sg = map.SubGrid(r.Quad.X, r.Quad.Y, r.Quad.Width, r.Quad.Height);
-                
+                SpawnRandomPowerupsInRoom(r);
             }
         }
 
@@ -83,7 +86,7 @@ public class MeshGenerator : MonoBehaviour
     {
         var en = pg.Select(Enemies);
         var inst = Instantiate(en);
-        inst.transform.position = new Vector3(x * Scale, 0, y * Scale);
+        inst.transform.position = new Vector3(x * Scale, 1f, y * Scale);
         enemiesSpawned.Add(inst);
     }
 
@@ -230,6 +233,31 @@ public class MeshGenerator : MonoBehaviour
         triangles.Add(last + 1);
         triangles.Add(last + 3);
         triangles.Add(last + 2);
+    }
+
+    private void SpawnRandomPowerupsInRoom(Node room)
+    {
+        var chance = UnityEngine.Random.Range(0f, 1f);
+        var amountToSpawn = 0;
+
+        if (chance < TWO_POWERUPS_CHANCE)
+            amountToSpawn = 1;
+        else if (chance < ONE_POWERUP_CHANCE)
+            amountToSpawn = 2;
+        else
+            return;
+
+        var spawned = 0;
+
+        while (spawned < amountToSpawn)
+        {
+            var rndPowerup = this.pg.Select(PowerUps);
+            var rndX = UnityEngine.Random.Range(0, room.Quad.Width);
+            var rndY = UnityEngine.Random.Range(0, room.Quad.Height);
+            Instantiate(rndPowerup, new Vector3((room.Quad.X + rndX) * this.Scale, 1f, (room.Quad.Y + rndY) * this.Scale), Quaternion.identity);            
+            spawned++;
+        }
+
     }
 
 
