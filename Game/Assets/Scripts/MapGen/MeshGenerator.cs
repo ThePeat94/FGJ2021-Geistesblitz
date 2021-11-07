@@ -97,9 +97,9 @@ public class MeshGenerator : MonoBehaviour
                 }
             }
         }
-
-        var endRoomCenter = this.mg.EndRoom.Center();
-        this.PortalEnd.transform.position = new Vector3(endRoomCenter.X * this.Scale, 1f, endRoomCenter.Y * this.Scale);
+        var endRoomCenter = pg.Select(mg.EndRoom.POIs);
+        if (endRoomCenter.IsEmpty) endRoomCenter = mg.EndRoom.Center();
+        this.PortalEnd.transform.position = new Vector3(endRoomCenter.X * this.Scale + Scale/2.0f, 1f, endRoomCenter.Y * this.Scale + Scale / 2.0f);
     }
 
     private void SpawnEnemy(int x, int y)
