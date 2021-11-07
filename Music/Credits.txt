@@ -9,3 +9,5 @@ SFX used:
 -Fall down: offers.adobe / Weapon Bow Recoil Elastic 01
 -Fireball hit: https://freesound.org/people/HighPixel/sounds/431174/
 -Fireball throw: offers.adobe / Fire Fireball Large 02
+-Dash: https://freesfx.co.uk/sfx/swoosh
+-Health button push: https://soundbible.com/419-Tiny-Button-Push.html
