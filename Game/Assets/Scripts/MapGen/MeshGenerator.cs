@@ -44,9 +44,10 @@ public class MeshGenerator : MonoBehaviour
     // }
 
     [ContextMenu("ProdGen/Generate")]
-    private void Generate()
+    public void Generate()
     {
-        this.Seed = UnityEngine.Random.Range(int.MinValue, int.MaxValue);
+        // Commented out - seed should be an outside parameter
+        //this.Seed = UnityEngine.Random.Range(int.MinValue, int.MaxValue);
         this.CleanSpawnedGameObjectList(this.enemiesSpawned);
         this.CleanSpawnedGameObjectList(this.spawnedPowerups);
         vertices.Clear();
@@ -105,17 +106,25 @@ public class MeshGenerator : MonoBehaviour
     {
         map.ForEachXY((x,y,v) =>
         {
+            var n = map.Neighbours(x, y);
             if(v != LevelElement.Wall)
             {
                 AddFloor(x, y);
-                var n = map.Neighbours(x, y);
                 if (n[0] == LevelElement.Wall) AddWallE(x, y);
                 if (n[1] == LevelElement.Wall) AddWallW(x, y);
                 if (n[2] == LevelElement.Wall) AddWallN(x, y);
                 if (n[3] == LevelElement.Wall) AddWallS(x, y);
             } else
             {
-                AddCap(x,y);
+                var vNeighhbours = new[]
+                {
+                    map[x-1, y-1],
+                    map[x+1, y-1],
+                    map[x-1, y+1],
+                    map[x+1, y+1]
+                };
+                if (vNeighhbours.Any(x => x != LevelElement.Wall) || n.Any(x => x != LevelElement.Wall))
+                    AddCap(x,y);
             }         
         });
     }
@@ -238,7 +247,7 @@ public class MeshGenerator : MonoBehaviour
 
     private void SpawnRandomPowerupsInRoom(Node room)
     {
-        var chance = UnityEngine.Random.Range(0f, 1f);
+        var chance = pg.RangeF(0, 1);
         var amountToSpawn = 0;
 
         if (chance < TWO_POWERUPS_CHANCE)
@@ -253,8 +262,8 @@ public class MeshGenerator : MonoBehaviour
         while (spawned < amountToSpawn)
         {
             var rndPowerup = this.pg.Select(PowerUps);
-            var rndX = UnityEngine.Random.Range(0, room.Quad.Width);
-            var rndY = UnityEngine.Random.Range(0, room.Quad.Height);
+            var rndX = pg.Range(0, room.Quad.Width);
+            var rndY = pg.Range(0, room.Quad.Height);
             var spawnedGO = Instantiate(rndPowerup, new Vector3((room.Quad.X + rndX) * this.Scale, 1f, (room.Quad.Y + rndY) * this.Scale), Quaternion.identity);            
             spawned++;
             this.spawnedPowerups.Add(spawnedGO);
