@@ -46,9 +46,4 @@ public class HealthController : MonoBehaviour
     {
         m_resourceController.ResetValue();
     }
-
-    public ResourceController GetResourceController()
-    {
-        return this.m_resourceController;
-    }
 }

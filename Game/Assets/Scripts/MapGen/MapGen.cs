@@ -8,7 +8,8 @@ namespace net6test.MapGenerator
     public enum LevelElement {
         Floor,
         Wall,
-        Door
+        Door,
+        POI
     }
 
     public class MapGen
@@ -31,6 +32,7 @@ namespace net6test.MapGenerator
         public Node Root { get; }
         public LevelMap Map { get; }
         public List<Node> Rooms { get; private set; } = new List<Node>();
+        public IEnumerable<Node> ActiveRooms => Rooms.Where(x => x.IsEnabled); 
         public Node StartRoom { get; private set; }
         public Node EndRoom { get; private set; }
         public HashSet<Node> CriticalPath { get; private set; }

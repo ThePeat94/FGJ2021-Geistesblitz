@@ -21,6 +21,11 @@ namespace UnityTemplateProjects
 
         private void Awake()
         {
+            this.Initialize();
+        }
+
+        private void Initialize()
+        {
             this.CurrentMovementSpeed = this.m_initialPlayerData.MovementSpeed;
             this.CurrentDashDistance = this.m_initialPlayerData.DashDistance;
             this.CurrentDefense = this.m_initialPlayerData.Defense;
@@ -28,6 +33,11 @@ namespace UnityTemplateProjects
             this.CurrentDashFramesCooldown = this.m_initialPlayerData.DashFramesCooldown;
             this.CurrentShootFramesCooldown = this.m_initialPlayerData.ShootFramesCooldown;
             this.CurrentSpreadShotCount = this.m_initialPlayerData.SpreadShotCount;
+        }
+
+        public void ResetToInitial()
+        {
+            this.Initialize();   
         }
     }
 }

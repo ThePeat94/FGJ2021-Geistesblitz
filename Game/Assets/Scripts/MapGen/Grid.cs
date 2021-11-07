@@ -53,11 +53,15 @@ namespace net6test.MapGenerator
         public bool IsOutOfBounds(int x, int y) => y < 0 || y >= h || x < 0 || x >= w;
 
         public T[] Neighbours(int x, int y){
-            var neighbours = new T[4];
+            var neighbours = new T[8];
             neighbours[0] = this[x+1,y]; 
             neighbours[1] = this[x-1,y];
             neighbours[2] = this[x,y-1]; 
-            neighbours[3] = this[x,y+1]; 
+            neighbours[3] = this[x,y+1];
+            neighbours[4] = this[x - 1, y - 1];
+            neighbours[5] = this[x + 1, y - 1];
+            neighbours[6] = this[x - 1, y + 1];
+            neighbours[7] = this[x + 1, y + 1];
             return neighbours; 
         }
 
@@ -89,6 +93,17 @@ namespace net6test.MapGenerator
                 for (int x = 0; x < w; x++)
                 {
                     func.Invoke(x,y,this[x,y]);
+                }
+            }
+        }
+
+        public void ForEachXY(int ox, int oy, int w, int h, Action<int, int, T> func)
+        {
+            for (int y = oy; y < oy+h; y++)
+            {
+                for (int x = ox; x < ox+w; x++)
+                {
+                    func.Invoke(x, y, this[x, y]);
                 }
             }
         }

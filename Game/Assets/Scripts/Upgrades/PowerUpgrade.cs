@@ -1,3 +1,4 @@
+using UI;
 using UnityEngine;
 using UnityTemplateProjects;
 
@@ -10,6 +11,7 @@ namespace Upgrades
             if (!other.TryGetComponent(out PlayerStatsController playerStatsController)) return;
             playerStatsController.CurrentAttackDamage += 1;
             GameObject.Destroy(this.gameObject);
+            PlayerHUD.Instance.IncreaseAttackMeter();
         }
     }
 }

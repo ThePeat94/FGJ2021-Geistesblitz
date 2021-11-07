@@ -10,9 +10,9 @@ namespace UnityTemplateProjects
         [SerializeField] private PlayerData m_playerData;
         private InputProcessor m_inputProcessor;
         private int m_currentFramesCooldown;
-        
+
         private PlayerStatsController m_playerStatsController;
-        
+
         private void Awake()
         {
             this.m_inputProcessor = this.GetComponent<InputProcessor>();
@@ -22,47 +22,71 @@ namespace UnityTemplateProjects
         private void Update()
         {
             if (this.m_inputProcessor.ShootTriggered)
-            {
                 this.Shoot();
-            }
         }
 
         private void FixedUpdate()
         {
-            if(this.m_currentFramesCooldown <= this.m_playerStatsController.CurrentShootFramesCooldown)
+            if (this.m_currentFramesCooldown <= this.m_playerStatsController.CurrentShootFramesCooldown)
                 this.m_currentFramesCooldown++;
         }
 
         private void Shoot()
         {
             if (this.m_currentFramesCooldown <= this.m_playerStatsController.CurrentShootFramesCooldown) return;
-            var spreadShotCount =  this.m_playerStatsController.CurrentSpreadShotCount;
-            var instantiatedProjectile = Instantiate(this.m_playerData.ProjectilePrefab);
-            var forward = this.transform.forward;
-            double angle = 20.0;
-            Debug.Log(spreadShotCount);
-            if (spreadShotCount % 2 == 1)
-            {
-                ShotHelper(forward, 0, instantiatedProjectile);
-            }
+            var spreadShotCount = this.m_playerStatsController.CurrentSpreadShotCount;
 
-            for(var i = 1 ; i < spreadShotCount; i += 2 )
-            {
-                ShotHelper(forward, angle, Instantiate(this.m_playerData.ProjectilePrefab));
-                ShotHelper(forward, angle,  Instantiate(this.m_playerData.ProjectilePrefab));
-                angle += angle;
-            }
+            if (spreadShotCount % 2 == 0)
+                this.ShootEvenAmount(spreadShotCount);
+            else
+                this.ShootOddAmount(spreadShotCount);
 
             this.m_currentFramesCooldown = 0;
         }
 
-        private void ShotHelper(Vector3 forward, double angle, GameObject projectile)
+        private void ShotHelper(float angle, GameObject projectileGO)
         {
-            //TODO Winkelberechnung ist nicht ganz Richtig
-            var dir = new Vector3( (float)(forward.x * Math.Cos(-angle) + forward.z * -Math.Sin(-angle)),
-                forward.y, (float)(forward.x * Math.Sin(-angle) + forward.z * -Math.Cos(-angle)));
-            projectile.transform.position = this.transform.position + dir;
-            projectile.GetComponent<Projectile>().ShootDirection = dir;
+            projectileGO.transform.RotateAround(projectileGO.transform.position, Vector3.up, angle);
+            var projectile = projectileGO.GetComponent<Projectile>();
+            projectile.ShootDirection = projectileGO.transform.forward;
+            projectile.Sender = this.gameObject;
+        }
+
+        private void ShootOddAmount(int spreadAmount)
+        {
+            this.ShotHelper(0, 
+                Instantiate(
+                    this.m_playerData.ProjectilePrefab, 
+                    this.transform.position + this.transform.forward.normalized, 
+                    this.transform.rotation
+                )
+            );
+
+            this.ShootEvenAmount(spreadAmount - 1);
+        }
+
+        private void ShootEvenAmount(int spreadAmount)
+        {
+            var currentAngle = 20f;
+            for (var i = 0; i < spreadAmount; i += 2)
+            {
+                this.ShotHelper(currentAngle, 
+                    Instantiate(
+                        this.m_playerData.ProjectilePrefab, 
+                        this.transform.position + this.transform.forward.normalized, 
+                        this.transform.rotation
+                    )
+                );
+                this.ShotHelper(-currentAngle, 
+                    Instantiate(
+                        this.m_playerData.ProjectilePrefab, 
+                        this.transform.position + this.transform.forward.normalized, 
+                        this.transform.rotation
+                    )
+                );
+
+                currentAngle += 20f;
+            }
         }
     }
 }

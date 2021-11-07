@@ -6,6 +6,7 @@ using UnityEngine;
 public class Projectile : MonoBehaviour
 {
     public Vector3 ShootDirection { get; set; }
+    public GameObject Sender { get; set; }
 
     private void Awake()
     {
@@ -17,12 +18,19 @@ public class Projectile : MonoBehaviour
     {
         this.transform.position += this.ShootDirection * Time.deltaTime * 20f;
     }
+    
 
     private void OnTriggerEnter(Collider other)
     {
-        if (!other.TryGetComponent(out HealthController playerHealthController)) return;
-        playerHealthController.TakeDamage(1);
+        Debug.Log("hit" + other.gameObject.name);
+        if (other.GetComponent<Projectile>() != null)
+            return;
         
+        if (other.TryGetComponent(out HealthController playerHealthController) && this.Sender != other.gameObject)
+        {
+            playerHealthController.TakeDamage(1);   
+        }
         Destroy(this.gameObject);
+
     }
 }

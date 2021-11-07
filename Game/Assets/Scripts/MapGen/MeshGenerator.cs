@@ -10,6 +10,11 @@ using System.Linq;
 [RequireComponent(typeof(MeshCollider))]
 public class MeshGenerator : MonoBehaviour
 {
+    // Texture Positions
+    const int TILES_X = 2;
+    const int TILES_Y = 2;
+
+
     public int Seed = 1986;
     public int Width = 64;
     public int Height = 64;
@@ -17,33 +22,40 @@ public class MeshGenerator : MonoBehaviour
     public float Scale = 2;
     public GameObject Player;
     public List<GameObject> Enemies;
+    public List<GameObject> PowerUps;
 
     Mesh mesh;
 
     List<Vector3> vertices = new List<Vector3>();
     List<int> triangles = new List<int>();
+    List<Vector2> uvs = new List<Vector2>();
     List<GameObject> enemiesSpawned = new List<GameObject>();
+    private List<GameObject> spawnedPowerups = new List<GameObject>();
     private LevelMap map;
     private ProdGen pg;
     private MapGen mg;
+    
+    private const float ONE_POWERUP_CHANCE = 0.25f;
+    private const float TWO_POWERUPS_CHANCE = 0.1f;
 
     // Start is called before the first frame update
-    void Start()
-    {
-        Generate();
-    }
+    // void Start()
+    // {
+    //     Generate();
+    // }
 
-    void OnValidate()
-    {        
-        Generate();
-    }
+    // void OnValidate()
+    // {        
+    //     Generate();
+    // }
 
-    private void Generate()
+    [ContextMenu("ProdGen/Generate")]
+    public void Generate()
     {
-        enemiesSpawned.ForEach(x => DestroyImmediate(x));
-        enemiesSpawned.Clear();
-        vertices.Clear();
-        triangles.Clear();
+        // Commented out - seed should be an outside parameter
+        //this.Seed = UnityEngine.Random.Range(int.MinValue, int.MaxValue);
+        this.CleanSpawnedGameObjectList(this.enemiesSpawned);
+        this.CleanSpawnedGameObjectList(this.spawnedPowerups);
 
         pg = new ProdGen(Seed);
         mg = new MapGen(pg, Width, Height, Threshold);
@@ -51,6 +63,7 @@ public class MeshGenerator : MonoBehaviour
 
         mesh = new Mesh();
         GetComponent<MeshFilter>().mesh = mesh;
+        //GetComponent<MeshRenderer>().material =
 
         CreateShape();
         UpdateMesh();
@@ -64,16 +77,22 @@ public class MeshGenerator : MonoBehaviour
 
         if(Enemies.Count > 0)
         {
-            foreach (var r in mg.Rooms.Where(x => x.IsEnabled))
+            var rooms = mg.ActiveRooms.Count();
+            Debug.Log($"{rooms} Rooms are active");
+            foreach (var r in mg.ActiveRooms)
             {
                 if (r == mg.StartRoom) continue;
 
-                var c = r.Center();
-                SpawnEnemy(c.X, c.Y);
-                
-                //var el = map[c.X, c.Y];
-                //var sg = map.SubGrid(r.Quad.X, r.Quad.Y, r.Quad.Width, r.Quad.Height);
-                
+                var spawn = pg.Select(r.POIs);
+                if (!spawn.IsEmpty)
+                {
+                    SpawnEnemy(spawn.X, spawn.Y);
+                    r.POIs.Remove(spawn);
+                }
+                if(PowerUps.Count > 0)
+                {
+                    SpawnRandomPowerupsInRoom(r);
+                }
             }
         }
 
@@ -82,9 +101,13 @@ public class MeshGenerator : MonoBehaviour
     private void SpawnEnemy(int x, int y)
     {
         var en = pg.Select(Enemies);
-        var inst = Instantiate(en);
-        inst.transform.position = new Vector3(x * Scale, 0, y * Scale);
-        enemiesSpawned.Add(inst);
+        if(en != null)
+        {
+            var inst = Instantiate(en);
+            inst.transform.position = new Vector3(x * Scale, 1f, y * Scale);
+            enemiesSpawned.Add(inst);
+            Debug.Log($"Spawned {en.name} at {x},{y}");
+        }
     }
 
     private void UpdateMesh()
@@ -92,6 +115,7 @@ public class MeshGenerator : MonoBehaviour
         mesh.Clear();
                 
         mesh.vertices = vertices.ToArray();
+        mesh.uv = uvs.ToArray();
         mesh.triangles = triangles.ToArray();
         mesh.RecalculateNormals();
         GetComponent<MeshCollider>().sharedMesh = mesh;
@@ -99,21 +123,48 @@ public class MeshGenerator : MonoBehaviour
 
     private void CreateShape()
     {
-        map.ForEachXY((x,y,v) =>
+        vertices.Clear();
+        triangles.Clear();
+        uvs.Clear();
+        for (int y = 0; y <= map.H; y++)
         {
-            if(v != LevelElement.Wall)
+            for (int x = 0; x <= map.W; x++)
             {
-                AddFloor(x, y);
+                var v = map[x, y];
                 var n = map.Neighbours(x, y);
-                if (n[0] == LevelElement.Wall) AddWallE(x, y);
-                if (n[1] == LevelElement.Wall) AddWallW(x, y);
-                if (n[2] == LevelElement.Wall) AddWallN(x, y);
-                if (n[3] == LevelElement.Wall) AddWallS(x, y);
-            } else
-            {
-                AddCap(x,y);
-            }         
-        });
+                if (v != LevelElement.Wall)
+                {
+                    AddFloor(x, y);
+                    if (n[0] == LevelElement.Wall) AddWallE(x, y);
+                    if (n[1] == LevelElement.Wall) AddWallW(x, y);
+                    if (n[2] == LevelElement.Wall) AddWallN(x, y);
+                    if (n[3] == LevelElement.Wall) AddWallS(x, y);
+                }
+                else
+                {
+                    if (n.Any(x => x != LevelElement.Wall))
+                        AddCap(x, y);
+                }
+            }
+        }
+    }
+
+    private void AddUvsForTile(int x, int y)
+    {
+        var sizeX = 1 / (float)TILES_X;
+        var sizeY = 1 / (float)TILES_Y;
+        float margin = 0.01f;
+
+        var startX = sizeX * x + margin;
+        var endX = startX + sizeX - margin;
+
+        var startY = 1f - (sizeY * y + margin);
+        var endY = 1f - (sizeY * y + sizeY - margin);
+
+        uvs.Add(new Vector2(endX, endY));
+        uvs.Add(new Vector2(startX, endY));
+        uvs.Add(new Vector2(endX, startY));
+        uvs.Add(new Vector2(startX, startY));
     }
 
     private void AddWallE(int x, int y)
@@ -126,6 +177,8 @@ public class MeshGenerator : MonoBehaviour
         vertices.Add(new Vector3(x + Scale, Scale, y + Scale));
         vertices.Add(new Vector3(x + Scale, 0, y));
         vertices.Add(new Vector3(x + Scale, 0, y + Scale));
+
+        AddUvsForTile(0, 0);
 
         triangles.Add(last);
         triangles.Add(last + 2);
@@ -146,6 +199,8 @@ public class MeshGenerator : MonoBehaviour
         vertices.Add(new Vector3(x, 0, y));
         vertices.Add(new Vector3(x, 0, y + Scale));
 
+        AddUvsForTile(0, 0);
+
         triangles.Add(last);
         triangles.Add(last + 1);
         triangles.Add(last + 2);
@@ -165,6 +220,8 @@ public class MeshGenerator : MonoBehaviour
         vertices.Add(new Vector3(x, 0, y));
         vertices.Add(new Vector3(x+Scale, 0, y));
 
+        AddUvsForTile(0, 0);
+
         triangles.Add(last);
         triangles.Add(last + 2);
         triangles.Add(last + 1);
@@ -183,6 +240,8 @@ public class MeshGenerator : MonoBehaviour
         vertices.Add(new Vector3(x + Scale, Scale, y+Scale));
         vertices.Add(new Vector3(x, 0, y+Scale));
         vertices.Add(new Vector3(x + Scale, 0, y+Scale));
+
+        AddUvsForTile(0, 0);
 
         triangles.Add(last);
         triangles.Add(last + 1);
@@ -204,6 +263,8 @@ public class MeshGenerator : MonoBehaviour
         vertices.Add(new Vector3(x + Scale, 0, y));
         vertices.Add(new Vector3(x + Scale, 0, y + Scale));
 
+        AddUvsForTile(1, 0);
+
         triangles.Add(last);
         triangles.Add(last + 1);
         triangles.Add(last + 2);
@@ -224,12 +285,50 @@ public class MeshGenerator : MonoBehaviour
         vertices.Add(new Vector3(x + Scale, Scale, y));
         vertices.Add(new Vector3(x + Scale, Scale, y + Scale));
 
+        AddUvsForTile(0, 1);
+
         triangles.Add(last);
         triangles.Add(last + 1);
         triangles.Add(last + 2);
         triangles.Add(last + 1);
         triangles.Add(last + 3);
         triangles.Add(last + 2);
+    }
+
+    private void SpawnRandomPowerupsInRoom(Node room)
+    {
+        var chance = pg.RangeF(0, 1);
+        var amountToSpawn = 0;
+
+        if (chance < TWO_POWERUPS_CHANCE)
+            amountToSpawn = 1;
+        else if (chance < ONE_POWERUP_CHANCE)
+            amountToSpawn = 2;
+        else
+            return;
+
+        var spawned = 0;
+
+        while (spawned < amountToSpawn)
+        {
+            var rndPowerup = this.pg.Select(PowerUps);
+            var spawn = pg.Select(room.POIs);
+            if (spawn.IsEmpty) continue;
+            var spawnedGO = Instantiate(rndPowerup, new Vector3(spawn.X * this.Scale, 1f, spawn.Y * this.Scale), Quaternion.identity);
+            room.POIs.Remove(spawn);
+            spawned++;
+            this.spawnedPowerups.Add(spawnedGO);
+        }
+
+    }
+
+    private void CleanSpawnedGameObjectList(List<GameObject> list)
+    {
+        foreach (var gameObject in list)
+        {
+            DestroyImmediate(gameObject);
+        }
+        list.Clear();
     }
 
 

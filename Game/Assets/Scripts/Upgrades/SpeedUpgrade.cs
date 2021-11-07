@@ -1,3 +1,4 @@
+using UI;
 using UnityEngine;
 using UnityTemplateProjects;
 
@@ -8,8 +9,9 @@ namespace Upgrades
         private void OnTriggerEnter(Collider other)
         {
             if (!other.TryGetComponent(out PlayerStatsController playerStatsController)) return;
-            playerStatsController.CurrentMovementSpeed += 5.0f;
+            playerStatsController.CurrentMovementSpeed += 1.0f;
             GameObject.Destroy(this.gameObject);
+            PlayerHUD.Instance.IncreaseSpeedMeter();
         }
     }
 }

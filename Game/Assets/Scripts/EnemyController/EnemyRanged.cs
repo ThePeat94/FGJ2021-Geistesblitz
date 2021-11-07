@@ -1,9 +1,11 @@
 
+using System;
 using EventArgs;
 using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.AI;
 using UnityEngine.UI;
+using Random = UnityEngine.Random;
 
 public class EnemyRanged : MonoBehaviour
 {
@@ -34,10 +36,13 @@ public class EnemyRanged : MonoBehaviour
     {
         m_player = PlayerMovementController.Instance.transform;
         m_agent = GetComponent<NavMeshAgent>();
-        
+    }
+
+    private void Start()
+    {
         this.GetComponent<HealthController>().HealthDownToZero += this.OnHealthDownToZero;
-        this.GetComponent<HealthController>().GetResourceController().ResourceValueChanged += this.OnHealthChanged;
-        this.GetComponent<HealthController>().GetResourceController().MaxValueChanged += this.OnMaxHealthChanged;
+        this.GetComponent<HealthController>().ResourceController.ResourceValueChanged += this.OnHealthChanged;
+        this.GetComponent<HealthController>().ResourceController.MaxValueChanged += this.OnMaxHealthChanged;
     }
 
     private void Update()
@@ -91,7 +96,9 @@ public class EnemyRanged : MonoBehaviour
         {
             var instantiatedProjectile = Instantiate(m_projectile);
             instantiatedProjectile.transform.position = this.transform.position + 2*this.transform.forward;
-            instantiatedProjectile.GetComponent<Projectile>().ShootDirection = this.transform.forward;
+            var projectile = instantiatedProjectile.GetComponent<Projectile>();
+            projectile.ShootDirection = this.transform.forward;
+            projectile.Sender = this.gameObject;
 
             alreadyAttacked = true;
             Invoke(nameof(ResetAttack), m_timeBetweenAttacks);
@@ -109,12 +116,12 @@ public class EnemyRanged : MonoBehaviour
     
     private void OnHealthChanged(object sender, ResourceValueChangedEventArgs e)
     {
-        this.m_healthBar.value = (e.NewValue / this.GetComponent<HealthController>().GetResourceController().MaxValue);
+        this.m_healthBar.value = (e.NewValue / this.GetComponent<HealthController>().ResourceController.MaxValue);
     }
     
     private void OnMaxHealthChanged(object sender, ResourceValueChangedEventArgs e)
     {
-        this.m_healthBar.value = (this.GetComponent<HealthController>().GetResourceController().CurrentValue / e.NewValue);
+        this.m_healthBar.value = (this.GetComponent<HealthController>().ResourceController.CurrentValue / e.NewValue);
     }
     
     private void OnHealthDownToZero(object sender, System.EventArgs e)

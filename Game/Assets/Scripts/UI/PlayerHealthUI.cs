@@ -12,7 +12,6 @@ namespace UI
 
         private void Awake()
         {
-            DontDestroyOnLoad(this.gameObject);
             this.m_healthSlider.minValue = 0;
         }
 

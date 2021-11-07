@@ -1,5 +1,7 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Drawing;
+using System.Linq;
 
 namespace net6test.MapGenerator
 {
@@ -30,8 +32,21 @@ namespace net6test.MapGenerator
             if (n.IsEnabled)
             {
                 Map.Fill(n.Quad.X+1, n.Quad.Y+1, n.Quad.Width-1, n.Quad.Height-1, (x, y) => LevelElement.Floor);
+                MarkPois(n);
             }
             //Populate(n);
+        }
+
+        private void MarkPois(Node n)
+        {
+            Map.ForEachXY(n.Quad.X, n.Quad.Y, n.Quad.Width, n.Quad.Height, (x, y, v) =>
+            {
+                if(Map.Neighbours(x, y).All(x => x == LevelElement.Floor))
+                {
+                    Map[x, y] = LevelElement.POI;
+                    n.POIs.Add(new Point(x, y));
+                }
+            });
         }
 
         //private void Populate(Node n)
@@ -58,7 +73,7 @@ namespace net6test.MapGenerator
         //    {
         //        var target = grid.Coords(t);
         //        var current = grid.Coords(first);
-                
+
         //        var c1 = current.X == 0 || current.X == grid.W-1 ? 0 : 1;
         //        var c2 = c1 == 1 ? 0 : 1;
         //        var sel = (Point p, int idx) => idx == 0 ? p.X : p.Y;
@@ -77,7 +92,7 @@ namespace net6test.MapGenerator
 
         //        foreach (var id in path)
         //            grid[id] = LevelElement.Floor;
-                
+
         //        foreach (var id in targets)
         //        {
         //            var co = grid.Coords(id);
