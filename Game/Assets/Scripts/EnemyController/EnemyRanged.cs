@@ -14,8 +14,6 @@ public class EnemyRanged : MonoBehaviour
 
     [SerializeField] private LayerMask m_whatIsGround, m_whatIsPlayer;
 
-    [SerializeField] private float m_health;
-
     //Patroling
     private Vector3 m_walkPoint;
     bool walkPointSet;
@@ -76,7 +74,7 @@ public class EnemyRanged : MonoBehaviour
 
         m_walkPoint = new Vector3(transform.position.x + randomX, transform.position.y, transform.position.z + randomZ);
 
-        if (Physics.Raycast(m_walkPoint, -transform.up, 2f, m_whatIsGround))
+        if (Physics.Raycast(m_walkPoint, -transform.up, 2f, m_whatIsGround) && this.m_agent.CalculatePath(this.m_walkPoint, new NavMeshPath()))
             walkPointSet = true;
     }
 

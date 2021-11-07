@@ -11,8 +11,8 @@ using System.Linq;
 public class MeshGenerator : MonoBehaviour
 {
     // Texture Positions
-    const int TILES_X = 2;
-    const int TILES_Y = 2;
+    const int TILES_X = 4;
+    const int TILES_Y = 4;
 
 
     public int Seed = 1986;
@@ -23,6 +23,7 @@ public class MeshGenerator : MonoBehaviour
     public GameObject Player;
     public List<GameObject> Enemies;
     public List<GameObject> PowerUps;
+    public GameObject PortalEnd;
 
     Mesh mesh;
 
@@ -71,8 +72,9 @@ public class MeshGenerator : MonoBehaviour
 
         if (Player != null)
         {
-            var c = mg.StartRoom.Center();
-            Player.transform.position = new Vector3(c.X * Scale, 0, c.Y * Scale);
+            var c = pg.Select(mg.StartRoom.POIs);
+            if (c.IsEmpty) c = mg.StartRoom.Center();
+            Player.transform.position = new Vector3(c.X * Scale , 0, c.Y * Scale );
         }
 
         if(Enemies.Count > 0)
@@ -96,6 +98,8 @@ public class MeshGenerator : MonoBehaviour
             }
         }
 
+        var endRoomCenter = this.mg.EndRoom.Center();
+        this.PortalEnd.transform.position = new Vector3(endRoomCenter.X * this.Scale, 1f, endRoomCenter.Y * this.Scale);
     }
 
     private void SpawnEnemy(int x, int y)
@@ -134,11 +138,18 @@ public class MeshGenerator : MonoBehaviour
                 var n = map.Neighbours(x, y);
                 if (v != LevelElement.Wall)
                 {
-                    AddFloor(x, y);
+                    if(v != LevelElement.Hole) AddFloor(x, y);
                     if (n[0] == LevelElement.Wall) AddWallE(x, y);
                     if (n[1] == LevelElement.Wall) AddWallW(x, y);
                     if (n[2] == LevelElement.Wall) AddWallN(x, y);
                     if (n[3] == LevelElement.Wall) AddWallS(x, y);
+                    if(v == LevelElement.Hole)
+                    {
+                        if (n[0] != LevelElement.Hole) AddWallE(x, y, -1);
+                        if (n[1] != LevelElement.Hole) AddWallW(x, y, -1);
+                        if (n[2] != LevelElement.Hole) AddWallN(x, y, -1);
+                        if (n[3] != LevelElement.Hole) AddWallS(x, y, -1);
+                    }
                 }
                 else
                 {
@@ -167,103 +178,113 @@ public class MeshGenerator : MonoBehaviour
         uvs.Add(new Vector2(startX, startY));
     }
 
-    private void AddWallE(int x, int y)
+    private void AddWallE(int x, int y, int offset = 0)
+    {
+        x *= (int)Scale;
+        y *= (int)Scale;
+        offset *= (int)Scale;
+
+        var last = vertices.Count;
+        vertices.Add(new Vector3(x + Scale, Scale+offset, y));
+        vertices.Add(new Vector3(x + Scale, Scale+offset, y + Scale));
+        vertices.Add(new Vector3(x + Scale, +offset, y));
+        vertices.Add(new Vector3(x + Scale, +offset, y + Scale));
+
+        AddUvsForTile(0, 0);
+
+        triangles.Add(last);
+        triangles.Add(last + 2);
+        triangles.Add(last + 1);
+        triangles.Add(last + 1);
+        triangles.Add(last + 2);
+        triangles.Add(last + 3);
+    }
+
+    private void AddWallW(int x, int y, int offset = 0)
+    {
+        x *= (int)Scale;
+        y *= (int)Scale;
+        offset *= (int)Scale;
+
+        var last = vertices.Count;
+        vertices.Add(new Vector3(x, Scale+offset, y));
+        vertices.Add(new Vector3(x, Scale+offset, y + Scale));
+        vertices.Add(new Vector3(x, +offset, y));
+        vertices.Add(new Vector3(x, +offset, y + Scale));
+
+        AddUvsForTile(0, 0);
+
+        triangles.Add(last);
+        triangles.Add(last + 1);
+        triangles.Add(last + 2);
+        triangles.Add(last + 1);
+        triangles.Add(last + 3);
+        triangles.Add(last + 2);
+    }
+
+    private void AddWallN(int x, int y, int offset = 0)
+    {
+        x *= (int)Scale;
+        y *= (int)Scale;
+        offset *= (int)Scale;
+
+        var last = vertices.Count;
+        vertices.Add(new Vector3(x, Scale +offset, y));
+        vertices.Add(new Vector3(x + Scale, Scale +offset, y));
+        vertices.Add(new Vector3(x, +offset, y));
+        vertices.Add(new Vector3(x+Scale, +offset, y));
+
+        AddUvsForTile(0, 0);
+
+        triangles.Add(last);
+        triangles.Add(last + 2);
+        triangles.Add(last + 1);
+        triangles.Add(last + 1);
+        triangles.Add(last + 2);
+        triangles.Add(last + 3);
+    }
+
+    private void AddWallS(int x, int y, int offset = 0)
+    {
+        x *= (int)Scale;
+        y *= (int)Scale;
+        offset *= (int)Scale;
+
+        var last = vertices.Count;
+        vertices.Add(new Vector3(x, Scale +offset, y+Scale));
+        vertices.Add(new Vector3(x + Scale, Scale +offset, y+Scale));
+        vertices.Add(new Vector3(x, +offset, y+Scale));
+        vertices.Add(new Vector3(x + Scale, +offset, y+Scale));
+
+        AddUvsForTile(0, 0);
+
+        triangles.Add(last);
+        triangles.Add(last + 1);
+        triangles.Add(last + 2);
+        triangles.Add(last + 1);
+        triangles.Add(last + 3);
+        triangles.Add(last + 2);
+    }
+
+    private void AddFloor(int x, int y, int offset = 0)
     {
         x *= (int)Scale;
         y *= (int)Scale;
 
         var last = vertices.Count;
-        vertices.Add(new Vector3(x + Scale, Scale, y));
-        vertices.Add(new Vector3(x + Scale, Scale, y + Scale));
+
+        vertices.Add(new Vector3(x, 0, y));
+        vertices.Add(new Vector3(x, 0, y + Scale));
         vertices.Add(new Vector3(x + Scale, 0, y));
         vertices.Add(new Vector3(x + Scale, 0, y + Scale));
 
-        AddUvsForTile(0, 0);
-
-        triangles.Add(last);
-        triangles.Add(last + 2);
-        triangles.Add(last + 1);
-        triangles.Add(last + 1);
-        triangles.Add(last + 2);
-        triangles.Add(last + 3);
-    }
-
-    private void AddWallW(int x, int y)
-    {
-        x *= (int)Scale;
-        y *= (int)Scale;
-
-        var last = vertices.Count;
-        vertices.Add(new Vector3(x, Scale, y));
-        vertices.Add(new Vector3(x, Scale, y + Scale));
-        vertices.Add(new Vector3(x, 0, y));
-        vertices.Add(new Vector3(x, 0, y + Scale));
-
-        AddUvsForTile(0, 0);
-
-        triangles.Add(last);
-        triangles.Add(last + 1);
-        triangles.Add(last + 2);
-        triangles.Add(last + 1);
-        triangles.Add(last + 3);
-        triangles.Add(last + 2);
-    }
-
-    private void AddWallN(int x, int y)
-    {
-        x *= (int)Scale;
-        y *= (int)Scale;
-
-        var last = vertices.Count;
-        vertices.Add(new Vector3(x, Scale, y));
-        vertices.Add(new Vector3(x + Scale, Scale, y));
-        vertices.Add(new Vector3(x, 0, y));
-        vertices.Add(new Vector3(x+Scale, 0, y));
-
-        AddUvsForTile(0, 0);
-
-        triangles.Add(last);
-        triangles.Add(last + 2);
-        triangles.Add(last + 1);
-        triangles.Add(last + 1);
-        triangles.Add(last + 2);
-        triangles.Add(last + 3);
-    }
-
-    private void AddWallS(int x, int y)
-    {
-        x *= (int)Scale;
-        y *= (int)Scale;
-
-        var last = vertices.Count;
-        vertices.Add(new Vector3(x, Scale, y+Scale));
-        vertices.Add(new Vector3(x + Scale, Scale, y+Scale));
-        vertices.Add(new Vector3(x, 0, y+Scale));
-        vertices.Add(new Vector3(x + Scale, 0, y+Scale));
-
-        AddUvsForTile(0, 0);
-
-        triangles.Add(last);
-        triangles.Add(last + 1);
-        triangles.Add(last + 2);
-        triangles.Add(last + 1);
-        triangles.Add(last + 3);
-        triangles.Add(last + 2);
-    }
-
-    private void AddFloor(int x, int y)
-    {
-        x *= (int)Scale;
-        y *= (int)Scale;
-
-        var last = vertices.Count;
-
-        vertices.Add(new Vector3(x, 0, y));
-        vertices.Add(new Vector3(x, 0, y + Scale));
-        vertices.Add(new Vector3(x + Scale, 0, y));
-        vertices.Add(new Vector3(x + Scale, 0, y + Scale));
-
-        AddUvsForTile(1, 0);
+        if (pg.Roll(80))
+        {
+            AddUvsForTile(1, 0);
+        } else
+        {
+            AddUvsForTile(1, 1);
+        }
 
         triangles.Add(last);
         triangles.Add(last + 1);
@@ -298,11 +319,14 @@ public class MeshGenerator : MonoBehaviour
     private void SpawnRandomPowerupsInRoom(Node room)
     {
         var chance = pg.RangeF(0, 1);
+        var mod = mg.IsOnCriticalPath(room) ? 1 : 2;
+            
+
         var amountToSpawn = 0;
 
-        if (chance < TWO_POWERUPS_CHANCE)
+        if (chance < TWO_POWERUPS_CHANCE * mod)
             amountToSpawn = 1;
-        else if (chance < ONE_POWERUP_CHANCE)
+        else if (chance < ONE_POWERUP_CHANCE * mod)
             amountToSpawn = 2;
         else
             return;
@@ -314,7 +338,7 @@ public class MeshGenerator : MonoBehaviour
             var rndPowerup = this.pg.Select(PowerUps);
             var spawn = pg.Select(room.POIs);
             if (spawn.IsEmpty) continue;
-            var spawnedGO = Instantiate(rndPowerup, new Vector3(spawn.X * this.Scale, 1f, spawn.Y * this.Scale), Quaternion.identity);
+            var spawnedGO = Instantiate(rndPowerup, new Vector3(spawn.X * this.Scale, 1f, spawn.Y * this.Scale ), Quaternion.identity);
             room.POIs.Remove(spawn);
             spawned++;
             this.spawnedPowerups.Add(spawnedGO);

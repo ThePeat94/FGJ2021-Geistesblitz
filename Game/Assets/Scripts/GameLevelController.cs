@@ -1,5 +1,8 @@
 using System;
 using System.Collections;
+using System.Collections.Generic;
+using System.Linq;
+using Scriptables;
 using UI;
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -9,28 +12,31 @@ namespace UnityTemplateProjects
     public class GameLevelController : MonoBehaviour
     {
         [SerializeField] private MeshGenerator m_meshGenerator;
-        private int m_currentLevel;
+        [SerializeField] private List<LevelData> m_levelData;
+        private static int s_currentLevel;
         
         private static GameLevelController s_instance;
         private static WaitForSeconds s_levelDoneWaitTime = new WaitForSeconds(3);
 
         private void Awake()
         {
-            if (s_instance == null)
-            {
-                s_instance = this;
-                DontDestroyOnLoad(this.gameObject);
-                SceneManager.sceneLoaded += OnSceneLoaded;
-            }
+            LevelData toLoad;
+            if (s_currentLevel >= this.m_levelData.Count)
+                toLoad = this.m_levelData.Last();
             else
-            {
-                Destroy(this.gameObject);
-                return;
-            }
+                toLoad = this.m_levelData[s_currentLevel];
+
+            this.m_meshGenerator.Width = toLoad.Width;
+            this.m_meshGenerator.Height = toLoad.Height;
+            this.m_meshGenerator.Threshold= toLoad.Threshold;
+            this.m_meshGenerator.Seed = UnityEngine.Random.Range(int.MinValue, int.MaxValue);
+            
+            this.m_meshGenerator.Generate();
         }
 
         public void FinishLevel()
         {
+            s_currentLevel++;
             StartCoroutine(this.ProcessLevelDone());
         }
 
@@ -41,10 +47,5 @@ namespace UnityTemplateProjects
             SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
         }
         
-        private void OnSceneLoaded(Scene arg0, LoadSceneMode arg1)
-        {
-            if(this.m_currentLevel > 0)
-                this.m_meshGenerator.Generate();
-        }
     }
 }
