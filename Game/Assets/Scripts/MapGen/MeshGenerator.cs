@@ -23,6 +23,7 @@ public class MeshGenerator : MonoBehaviour
     public GameObject Player;
     public List<GameObject> Enemies;
     public List<GameObject> PowerUps;
+    public GameObject PortalEnd;
 
     Mesh mesh;
 
@@ -97,6 +98,8 @@ public class MeshGenerator : MonoBehaviour
             }
         }
 
+        var endRoomCenter = this.mg.EndRoom.Center();
+        this.PortalEnd.transform.position = new Vector3(endRoomCenter.X * this.Scale, 1f, endRoomCenter.Y * this.Scale);
     }
 
     private void SpawnEnemy(int x, int y)
