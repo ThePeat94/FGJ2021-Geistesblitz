@@ -14,7 +14,9 @@ public class EnemyRanged : MonoBehaviour
 
     [SerializeField] private LayerMask m_whatIsGround, m_whatIsPlayer;
     [SerializeField] private AudioClip m_shootSound;
-    [SerializeField] private AudioSource m_sfxPlayer;
+    [SerializeField] private AudioClip m_dyingSound;
+    [SerializeField] private AudioSource m_sfxShoot;
+    [SerializeField] private AudioSource m_sfxDying;
     //Patroling
     private Vector3 m_walkPoint;
     bool walkPointSet;
@@ -99,9 +101,9 @@ public class EnemyRanged : MonoBehaviour
             projectile.ShootDirection = this.transform.forward;
             projectile.Sender = this.gameObject;
             
-            this.m_sfxPlayer.clip = this.m_shootSound;
-            this.m_sfxPlayer.loop = false;
-            this.m_sfxPlayer.Play();
+            this.m_sfxShoot.clip = this.m_shootSound;
+            this.m_sfxShoot.loop = false;
+            this.m_sfxShoot.Play();
 
             alreadyAttacked = true;
             Invoke(nameof(ResetAttack), m_timeBetweenAttacks);
@@ -134,6 +136,9 @@ public class EnemyRanged : MonoBehaviour
     
     private void DestroyEnemy()
     {
+        this.m_sfxDying.clip = this.m_dyingSound;
+        this.m_sfxDying.loop = false;
+        this.m_sfxDying.Play();
         Destroy(gameObject);
     }
 }
