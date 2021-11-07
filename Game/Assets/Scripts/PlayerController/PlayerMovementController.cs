@@ -7,6 +7,7 @@ using Scriptables;
 using UI;
 using Unity.VisualScripting;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using UnityTemplateProjects;
 
 public class PlayerMovementController : MonoBehaviour
@@ -21,6 +22,8 @@ public class PlayerMovementController : MonoBehaviour
     private GameObject m_currentInteractable;
     private PlayerDashController m_playerDashController;
     private Vector3 m_mousePlayerPosition;
+
+    private bool m_isGameOver;
     
     private static readonly int s_isWalkingHash = Animator.StringToHash("IsWalking");
 
@@ -29,26 +32,38 @@ public class PlayerMovementController : MonoBehaviour
 
     private void Awake()
     {
-        if (s_instance == null)
-        {
-            s_instance = this;
-        }
-        else
-        {
-            Destroy(this.gameObject);
-            return;
-        }
-
+        s_instance = this;
         this.m_playerStatsController = this.GetComponent<PlayerStatsController>();
         this.m_inputProcessor = this.GetComponent<InputProcessor>();
         this.m_playerDashController = this.GetComponent<PlayerDashController>();
         this.m_characterController = this.GetComponent<CharacterController>();
         this.m_animator = this.GetComponent<Animator>();
     }
-    
+
+    private void Start()
+    {
+        this.m_playerStatsController.HealthController.HealthDownToZero += this.OnDied;
+    }
+
+    private void OnDied(object sender, System.EventArgs e)
+    {
+        this.m_isGameOver = true;
+        PlayerHUD.Instance.ShowGameOverScreen();
+    }
+
     // Update is called once per frame
     void Update()
     {
+        if (this.m_isGameOver)
+        {
+            if (this.m_inputProcessor.RestartTriggered)
+            {
+                SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
+                return;
+            }
+            return;
+        }
+        
         if (this.m_playerDashController.IsDashing) return;
         
         var mouseRay = Camera.main.ScreenPointToRay(this.m_inputProcessor.MouseScreenPosition);
