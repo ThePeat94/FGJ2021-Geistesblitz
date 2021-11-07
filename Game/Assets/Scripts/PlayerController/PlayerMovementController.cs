@@ -9,6 +9,7 @@ using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityTemplateProjects;
+using UnityTemplateProjects.Utils;
 
 public class PlayerMovementController : MonoBehaviour
 {
@@ -49,6 +50,7 @@ public class PlayerMovementController : MonoBehaviour
     {
         this.m_isGameOver = true;
         PlayerHUD.Instance.ShowGameOverScreen();
+        MusicPlayer.Instance.PlayGameOver();
     }
 
     // Update is called once per frame
