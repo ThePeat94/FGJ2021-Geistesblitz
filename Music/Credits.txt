@@ -6,3 +6,6 @@ SFX used:
 -bat wings: https://freesfx.co.uk/sfx/bat-wings
 -Ghost ascending: Offers.adobe / Cartoon Balloon Being Blown Up 02
 -Game Over drum sound: Offers.adobe / Cartoon Drum Bass 01
+-Fall down: offers.adobe / Weapon Bow Recoil Elastic 01
+-Fireball hit: https://freesound.org/people/HighPixel/sounds/431174/
+-Fireball throw: offers.adobe / Fire Fireball Large 02
