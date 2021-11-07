@@ -35,7 +35,7 @@ public class HealthController : MonoBehaviour
             this.Kill();
     }
 
-    private void Kill()
+    public void Kill()
     {
         m_resourceController.UseResource(m_resourceController.CurrentValue);
         this.m_healthDownToZero?.Invoke(this, System.EventArgs.Empty);
