@@ -71,8 +71,9 @@ public class MeshGenerator : MonoBehaviour
 
         if (Player != null)
         {
-            var c = mg.StartRoom.Center();
-            Player.transform.position = new Vector3(c.X * Scale, 0, c.Y * Scale);
+            var c = pg.Select(mg.StartRoom.POIs);
+            if (c.IsEmpty) c = mg.StartRoom.Center();
+            Player.transform.position = new Vector3(c.X * Scale + Scale / 2, 0, c.Y * Scale + Scale / 2);
         }
 
         if(Enemies.Count > 0)
@@ -104,7 +105,7 @@ public class MeshGenerator : MonoBehaviour
         if(en != null)
         {
             var inst = Instantiate(en);
-            inst.transform.position = new Vector3(x * Scale, 1f, y * Scale);
+            inst.transform.position = new Vector3(x * Scale+ Scale / 2, 1f, y * Scale+ Scale / 2);
             enemiesSpawned.Add(inst);
             Debug.Log($"Spawned {en.name} at {x},{y}");
         }
@@ -331,7 +332,7 @@ public class MeshGenerator : MonoBehaviour
             var rndPowerup = this.pg.Select(PowerUps);
             var spawn = pg.Select(room.POIs);
             if (spawn.IsEmpty) continue;
-            var spawnedGO = Instantiate(rndPowerup, new Vector3(spawn.X * this.Scale, 1f, spawn.Y * this.Scale), Quaternion.identity);
+            var spawnedGO = Instantiate(rndPowerup, new Vector3(spawn.X * this.Scale + Scale/2, 1f, spawn.Y * this.Scale + Scale / 2), Quaternion.identity);
             room.POIs.Remove(spawn);
             spawned++;
             this.spawnedPowerups.Add(spawnedGO);
