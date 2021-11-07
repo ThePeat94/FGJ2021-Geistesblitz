@@ -24,6 +24,7 @@ public class MeshGenerator : MonoBehaviour
     List<Vector3> vertices = new List<Vector3>();
     List<int> triangles = new List<int>();
     List<GameObject> enemiesSpawned = new List<GameObject>();
+    private List<GameObject> spawnedPowerups = new List<GameObject>();
     private LevelMap map;
     private ProdGen pg;
     private MapGen mg;
@@ -46,8 +47,8 @@ public class MeshGenerator : MonoBehaviour
     private void Generate()
     {
         this.Seed = UnityEngine.Random.Range(int.MinValue, int.MaxValue);
-        enemiesSpawned.ForEach(x => DestroyImmediate(x));
-        enemiesSpawned.Clear();
+        this.CleanSpawnedGameObjectList(this.enemiesSpawned);
+        this.CleanSpawnedGameObjectList(this.spawnedPowerups);
         vertices.Clear();
         triangles.Clear();
 
@@ -254,10 +255,20 @@ public class MeshGenerator : MonoBehaviour
             var rndPowerup = this.pg.Select(PowerUps);
             var rndX = UnityEngine.Random.Range(0, room.Quad.Width);
             var rndY = UnityEngine.Random.Range(0, room.Quad.Height);
-            Instantiate(rndPowerup, new Vector3((room.Quad.X + rndX) * this.Scale, 1f, (room.Quad.Y + rndY) * this.Scale), Quaternion.identity);            
+            var spawnedGO = Instantiate(rndPowerup, new Vector3((room.Quad.X + rndX) * this.Scale, 1f, (room.Quad.Y + rndY) * this.Scale), Quaternion.identity);            
             spawned++;
+            this.spawnedPowerups.Add(spawnedGO);
         }
 
+    }
+
+    private void CleanSpawnedGameObjectList(List<GameObject> list)
+    {
+        foreach (var gameObject in list)
+        {
+            DestroyImmediate(gameObject);
+        }
+        list.Clear();
     }
 
 
