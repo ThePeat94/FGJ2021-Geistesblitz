@@ -3,4 +3,6 @@ Instruments from Studio One 5 Sound Library and LABS:
 https://labs.spitfireaudio.com/#type=&search=&new=true
 
 SFX used:
--bat wings https://freesfx.co.uk/sfx/bat-wings
+-bat wings: https://freesfx.co.uk/sfx/bat-wings
+-Ghost ascending: Offers.adobe / Cartoon Balloon Being Blown Up 02
+-Game Over drum sound: Offers.adobe / Cartoon Drum Bass 01
