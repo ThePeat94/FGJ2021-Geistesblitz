@@ -11,6 +11,7 @@ namespace UnityTemplateProjects.Utils
         [SerializeField] private AudioSource m_player;
 
         private static MusicPlayer s_instance;
+        public static MusicPlayer Instance => s_instance;
         
         private void Awake()
         {

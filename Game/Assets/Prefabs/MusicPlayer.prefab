@@ -140,6 +140,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c4c232d1689148a48c9bffadc96b0780, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_gameOverClip: {fileID: 0}
+  m_gameOverClip: {fileID: 8300000, guid: 4e61e8af14a6f4a8c8dbbaae7dc1c147, type: 3}
   m_defaultQueue: {fileID: 8300000, guid: 9b3c66e087edc7341bb0ad8543aff892, type: 3}
   m_player: {fileID: 660534296848857672}

@@ -9,6 +9,8 @@ public class HealthController : MonoBehaviour
     private ResourceController m_resourceController;
     private EventHandler m_healthDownToZero;
 
+    private bool m_isDead;
+    
     public ResourceController ResourceController => this.m_resourceController;
     
     private void Awake() 
@@ -24,6 +26,8 @@ public class HealthController : MonoBehaviour
 
     public void TakeDamage(int value)
     {
+        if (this.m_isDead) return;
+        
         if (!this.m_resourceController.UseResource(value))
             this.Kill();
         
@@ -35,6 +39,7 @@ public class HealthController : MonoBehaviour
     {
         m_resourceController.UseResource(m_resourceController.CurrentValue);
         this.m_healthDownToZero?.Invoke(this, System.EventArgs.Empty);
+        this.m_isDead = true;
     }
 
     public void Heal(int value)
