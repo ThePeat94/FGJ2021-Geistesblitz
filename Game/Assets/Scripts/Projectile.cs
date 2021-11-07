@@ -22,6 +22,10 @@ public class Projectile : MonoBehaviour
 
     private void OnTriggerEnter(Collider other)
     {
+        Debug.Log("hit" + other.gameObject.name);
+        if (other.GetComponent<Projectile>() != null)
+            return;
+        
         if (other.TryGetComponent(out HealthController playerHealthController) && this.Sender != other.gameObject)
         {
             playerHealthController.TakeDamage(1);   
