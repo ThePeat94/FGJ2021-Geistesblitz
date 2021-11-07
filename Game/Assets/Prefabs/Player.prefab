@@ -113,6 +113,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_playerData: {fileID: 11400000, guid: 6361c79c9e1296948bccbefc89e3fc96, type: 2}
+  m_projectileSpawn: {fileID: 282962214796216596}
 --- !u!114 &4820235826046086681
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -179,7 +180,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 8787940962861603777}
   m_LocalRotation: {x: 0.7071068, y: 0, z: 0, w: 0.7071068}
-  m_LocalPosition: {x: 0, y: -0.01829999, z: 0.007400003}
+  m_LocalPosition: {x: 0, y: -0.0205, z: 0.0074}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 3079675544861566196}
