@@ -14,8 +14,6 @@ public class EnemyRanged : MonoBehaviour
 
     [SerializeField] private LayerMask m_whatIsGround, m_whatIsPlayer;
 
-    [SerializeField] private float m_health;
-
     //Patroling
     private Vector3 m_walkPoint;
     bool walkPointSet;
