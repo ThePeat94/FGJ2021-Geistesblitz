@@ -103,20 +103,11 @@ public class PlayerMovementController : MonoBehaviour
     {
         this.transform.LookAt(this.m_mousePlayerPosition);
     }
-
-    private void FixedUpdate()
-    {
-        if (this.m_currentFallDamageCooldown <= 20)
-            this.m_currentFallDamageCooldown++;
-    }
     
     private void CheckOutOfBoundaries()
     {
-        if (this.transform.position.y > -5) return;
-        if (this.m_currentFallDamageCooldown <= 20) return;
-
-        this.m_playerStatsController.HealthController.TakeDamage( (int)(this.m_playerStatsController.HealthController.ResourceController.MaxValue / 10) );
-        this.m_currentFallDamageCooldown = 0;
+        if (this.transform.position.y > -100) return;
+        this.m_playerStatsController.HealthController.Kill();
     }
     
     private void UpdateAnimator()
