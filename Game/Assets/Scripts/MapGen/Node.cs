@@ -19,6 +19,7 @@ namespace net6test.MapGenerator
         public List<Node> NeighboursDown { get; private set; } = new List<Node>();
         public List<Node> NeighboursLeft { get; private set; } = new List<Node>();
         public List<Node> NeighboursRight { get; private set; } = new List<Node>();
+        public List<Point> POIs { get; } = new List<Point>();
         public bool IsEnabled { get; set; } = false;
 
 

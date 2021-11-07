@@ -72,13 +72,21 @@ public class MeshGenerator : MonoBehaviour
 
         if(Enemies.Count > 0)
         {
-            foreach (var r in mg.Rooms.Where(x => x.IsEnabled))
+            var rooms = mg.ActiveRooms.Count();
+            Debug.Log($"{rooms} Rooms are active");
+            foreach (var r in mg.ActiveRooms)
             {
                 if (r == mg.StartRoom) continue;
 
-                var c = r.Center();
-                SpawnEnemy(c.X, c.Y);
-                SpawnRandomPowerupsInRoom(r);
+                var spawn = pg.Select(r.POIs);
+                if (!spawn.IsEmpty)
+                {
+                    SpawnEnemy(spawn.X, spawn.Y);
+                }
+                if(PowerUps.Count > 0)
+                {
+                    SpawnRandomPowerupsInRoom(r);
+                }
             }
         }
 
@@ -87,9 +95,13 @@ public class MeshGenerator : MonoBehaviour
     private void SpawnEnemy(int x, int y)
     {
         var en = pg.Select(Enemies);
-        var inst = Instantiate(en);
-        inst.transform.position = new Vector3(x * Scale, 1f, y * Scale);
-        enemiesSpawned.Add(inst);
+        if(en != null)
+        {
+            var inst = Instantiate(en);
+            inst.transform.position = new Vector3(x * Scale, 1f, y * Scale);
+            enemiesSpawned.Add(inst);
+            Debug.Log($"Spawned {en.name} at {x},{y}");
+        }
     }
 
     private void UpdateMesh()
@@ -104,29 +116,27 @@ public class MeshGenerator : MonoBehaviour
 
     private void CreateShape()
     {
-        map.ForEachXY((x,y,v) =>
+        for (int y = 0; y <= map.H; y++)
         {
-            var n = map.Neighbours(x, y);
-            if(v != LevelElement.Wall)
+            for (int x = 0; x <= map.W; x++)
             {
-                AddFloor(x, y);
-                if (n[0] == LevelElement.Wall) AddWallE(x, y);
-                if (n[1] == LevelElement.Wall) AddWallW(x, y);
-                if (n[2] == LevelElement.Wall) AddWallN(x, y);
-                if (n[3] == LevelElement.Wall) AddWallS(x, y);
-            } else
-            {
-                var vNeighhbours = new[]
+                var v = map[x, y];
+                var n = map.Neighbours(x, y);
+                if (v != LevelElement.Wall)
                 {
-                    map[x-1, y-1],
-                    map[x+1, y-1],
-                    map[x-1, y+1],
-                    map[x+1, y+1]
-                };
-                if (vNeighhbours.Any(x => x != LevelElement.Wall) || n.Any(x => x != LevelElement.Wall))
-                    AddCap(x,y);
-            }         
-        });
+                    AddFloor(x, y);
+                    if (n[0] == LevelElement.Wall) AddWallE(x, y);
+                    if (n[1] == LevelElement.Wall) AddWallW(x, y);
+                    if (n[2] == LevelElement.Wall) AddWallN(x, y);
+                    if (n[3] == LevelElement.Wall) AddWallS(x, y);
+                }
+                else
+                {
+                    if (n.Any(x => x != LevelElement.Wall))
+                        AddCap(x, y);
+                }
+            }
+        }
     }
 
     private void AddWallE(int x, int y)
