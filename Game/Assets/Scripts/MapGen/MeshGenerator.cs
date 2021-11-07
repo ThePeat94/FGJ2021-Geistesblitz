@@ -11,8 +11,8 @@ using System.Linq;
 public class MeshGenerator : MonoBehaviour
 {
     // Texture Positions
-    const int TILES_X = 2;
-    const int TILES_Y = 2;
+    const int TILES_X = 4;
+    const int TILES_Y = 4;
 
 
     public int Seed = 1986;
@@ -134,11 +134,18 @@ public class MeshGenerator : MonoBehaviour
                 var n = map.Neighbours(x, y);
                 if (v != LevelElement.Wall)
                 {
-                    AddFloor(x, y);
+                    if(v != LevelElement.Hole) AddFloor(x, y);
                     if (n[0] == LevelElement.Wall) AddWallE(x, y);
                     if (n[1] == LevelElement.Wall) AddWallW(x, y);
                     if (n[2] == LevelElement.Wall) AddWallN(x, y);
                     if (n[3] == LevelElement.Wall) AddWallS(x, y);
+                    if(v == LevelElement.Hole)
+                    {
+                        if (n[0] != LevelElement.Hole) AddWallE(x, y, -1);
+                        if (n[1] != LevelElement.Hole) AddWallW(x, y, -1);
+                        if (n[2] != LevelElement.Hole) AddWallN(x, y, -1);
+                        if (n[3] != LevelElement.Hole) AddWallS(x, y, -1);
+                    }
                 }
                 else
                 {
@@ -167,103 +174,113 @@ public class MeshGenerator : MonoBehaviour
         uvs.Add(new Vector2(startX, startY));
     }
 
-    private void AddWallE(int x, int y)
+    private void AddWallE(int x, int y, int offset = 0)
+    {
+        x *= (int)Scale;
+        y *= (int)Scale;
+        offset *= (int)Scale;
+
+        var last = vertices.Count;
+        vertices.Add(new Vector3(x + Scale, Scale+offset, y));
+        vertices.Add(new Vector3(x + Scale, Scale+offset, y + Scale));
+        vertices.Add(new Vector3(x + Scale, +offset, y));
+        vertices.Add(new Vector3(x + Scale, +offset, y + Scale));
+
+        AddUvsForTile(0, 0);
+
+        triangles.Add(last);
+        triangles.Add(last + 2);
+        triangles.Add(last + 1);
+        triangles.Add(last + 1);
+        triangles.Add(last + 2);
+        triangles.Add(last + 3);
+    }
+
+    private void AddWallW(int x, int y, int offset = 0)
+    {
+        x *= (int)Scale;
+        y *= (int)Scale;
+        offset *= (int)Scale;
+
+        var last = vertices.Count;
+        vertices.Add(new Vector3(x, Scale+offset, y));
+        vertices.Add(new Vector3(x, Scale+offset, y + Scale));
+        vertices.Add(new Vector3(x, +offset, y));
+        vertices.Add(new Vector3(x, +offset, y + Scale));
+
+        AddUvsForTile(0, 0);
+
+        triangles.Add(last);
+        triangles.Add(last + 1);
+        triangles.Add(last + 2);
+        triangles.Add(last + 1);
+        triangles.Add(last + 3);
+        triangles.Add(last + 2);
+    }
+
+    private void AddWallN(int x, int y, int offset = 0)
+    {
+        x *= (int)Scale;
+        y *= (int)Scale;
+        offset *= (int)Scale;
+
+        var last = vertices.Count;
+        vertices.Add(new Vector3(x, Scale +offset, y));
+        vertices.Add(new Vector3(x + Scale, Scale +offset, y));
+        vertices.Add(new Vector3(x, +offset, y));
+        vertices.Add(new Vector3(x+Scale, +offset, y));
+
+        AddUvsForTile(0, 0);
+
+        triangles.Add(last);
+        triangles.Add(last + 2);
+        triangles.Add(last + 1);
+        triangles.Add(last + 1);
+        triangles.Add(last + 2);
+        triangles.Add(last + 3);
+    }
+
+    private void AddWallS(int x, int y, int offset = 0)
+    {
+        x *= (int)Scale;
+        y *= (int)Scale;
+        offset *= (int)Scale;
+
+        var last = vertices.Count;
+        vertices.Add(new Vector3(x, Scale +offset, y+Scale));
+        vertices.Add(new Vector3(x + Scale, Scale +offset, y+Scale));
+        vertices.Add(new Vector3(x, +offset, y+Scale));
+        vertices.Add(new Vector3(x + Scale, +offset, y+Scale));
+
+        AddUvsForTile(0, 0);
+
+        triangles.Add(last);
+        triangles.Add(last + 1);
+        triangles.Add(last + 2);
+        triangles.Add(last + 1);
+        triangles.Add(last + 3);
+        triangles.Add(last + 2);
+    }
+
+    private void AddFloor(int x, int y, int offset = 0)
     {
         x *= (int)Scale;
         y *= (int)Scale;
 
         var last = vertices.Count;
-        vertices.Add(new Vector3(x + Scale, Scale, y));
-        vertices.Add(new Vector3(x + Scale, Scale, y + Scale));
+
+        vertices.Add(new Vector3(x, 0, y));
+        vertices.Add(new Vector3(x, 0, y + Scale));
         vertices.Add(new Vector3(x + Scale, 0, y));
         vertices.Add(new Vector3(x + Scale, 0, y + Scale));
 
-        AddUvsForTile(0, 0);
-
-        triangles.Add(last);
-        triangles.Add(last + 2);
-        triangles.Add(last + 1);
-        triangles.Add(last + 1);
-        triangles.Add(last + 2);
-        triangles.Add(last + 3);
-    }
-
-    private void AddWallW(int x, int y)
-    {
-        x *= (int)Scale;
-        y *= (int)Scale;
-
-        var last = vertices.Count;
-        vertices.Add(new Vector3(x, Scale, y));
-        vertices.Add(new Vector3(x, Scale, y + Scale));
-        vertices.Add(new Vector3(x, 0, y));
-        vertices.Add(new Vector3(x, 0, y + Scale));
-
-        AddUvsForTile(0, 0);
-
-        triangles.Add(last);
-        triangles.Add(last + 1);
-        triangles.Add(last + 2);
-        triangles.Add(last + 1);
-        triangles.Add(last + 3);
-        triangles.Add(last + 2);
-    }
-
-    private void AddWallN(int x, int y)
-    {
-        x *= (int)Scale;
-        y *= (int)Scale;
-
-        var last = vertices.Count;
-        vertices.Add(new Vector3(x, Scale, y));
-        vertices.Add(new Vector3(x + Scale, Scale, y));
-        vertices.Add(new Vector3(x, 0, y));
-        vertices.Add(new Vector3(x+Scale, 0, y));
-
-        AddUvsForTile(0, 0);
-
-        triangles.Add(last);
-        triangles.Add(last + 2);
-        triangles.Add(last + 1);
-        triangles.Add(last + 1);
-        triangles.Add(last + 2);
-        triangles.Add(last + 3);
-    }
-
-    private void AddWallS(int x, int y)
-    {
-        x *= (int)Scale;
-        y *= (int)Scale;
-
-        var last = vertices.Count;
-        vertices.Add(new Vector3(x, Scale, y+Scale));
-        vertices.Add(new Vector3(x + Scale, Scale, y+Scale));
-        vertices.Add(new Vector3(x, 0, y+Scale));
-        vertices.Add(new Vector3(x + Scale, 0, y+Scale));
-
-        AddUvsForTile(0, 0);
-
-        triangles.Add(last);
-        triangles.Add(last + 1);
-        triangles.Add(last + 2);
-        triangles.Add(last + 1);
-        triangles.Add(last + 3);
-        triangles.Add(last + 2);
-    }
-
-    private void AddFloor(int x, int y)
-    {
-        x *= (int)Scale;
-        y *= (int)Scale;
-
-        var last = vertices.Count;
-
-        vertices.Add(new Vector3(x, 0, y));
-        vertices.Add(new Vector3(x, 0, y + Scale));
-        vertices.Add(new Vector3(x + Scale, 0, y));
-        vertices.Add(new Vector3(x + Scale, 0, y + Scale));
-
-        AddUvsForTile(1, 0);
+        if (pg.Roll(80))
+        {
+            AddUvsForTile(1, 0);
+        } else
+        {
+            AddUvsForTile(1, 1);
+        }
 
         triangles.Add(last);
         triangles.Add(last + 1);

@@ -1,15 +1,16 @@
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.Drawing;
 
 namespace net6test.MapGenerator
 {
-    public class Grid<T> : IEnumerable {
+    public class Grid<T> : IEnumerable<T> {
         private readonly int w;
         private readonly int h;
         private readonly T @default;
         private readonly T seed;
-        private T[] data;
+        private List<T> data;
 
         public int W => w;
         public int H => h;
@@ -20,15 +21,15 @@ namespace net6test.MapGenerator
             this.h = h;
             this.@default = @default;
             this.seed = seed;
-            this.data = new T[w*h];
+            this.data = new List<T>(w*h);
             Clear();
         }
 
         public void Clear()
         {
-            for (int i = 0; i < this.data.Length; i++)
+            for (int i = 0; i < this.data.Capacity; i++)
             {
-                data[i] = seed;
+                data.Add(seed);
             }
         }
 
@@ -48,7 +49,7 @@ namespace net6test.MapGenerator
             }
         }
 
-        public bool IsOutOfBounds(int id) => id < 0 || id >= data.Length; 
+        public bool IsOutOfBounds(int id) => id < 0 || id >= data.Count; 
 
         public bool IsOutOfBounds(int x, int y) => y < 0 || y >= h || x < 0 || x >= w;
 
@@ -75,12 +76,24 @@ namespace net6test.MapGenerator
             }
         }
 
+       
         public void Fill(int x, int y, int w, int h, Func<int,int,T> fn){
             for (int oy = y; oy < y+h; oy++)
             {
                 for (int ox = x; ox < x+w; ox++)
                 {
                     this[ox,oy] = fn.Invoke(ox,oy);
+                }
+            }
+        }
+
+        public void Fill(int x, int y, int w, int h, Func<int, int, T, T> fn)
+        {
+            for (int oy = y; oy < y + h; oy++)
+            {
+                for (int ox = x; ox < x + w; ox++)
+                {
+                    this[ox, oy] = fn.Invoke(ox, oy, this[ox, oy]);
                 }
             }
         }
@@ -114,7 +127,7 @@ namespace net6test.MapGenerator
             {
                 for (int ox = x; ox < x+w; ox++)
                 {
-                    grid[ox-x, oy-y] = this[x,y];
+                    grid[ox-x, oy-y] = this[ox,oy];
                 }
             }
             return grid;
@@ -131,6 +144,11 @@ namespace net6test.MapGenerator
         //public IEnumerator<T> GetEnumerator() => data.GetEnumerator<T>();
 
         IEnumerator IEnumerable.GetEnumerator()
+        {
+            return data.GetEnumerator();
+        }
+
+        public IEnumerator<T> GetEnumerator()
         {
             return data.GetEnumerator();
         }
