@@ -44,10 +44,12 @@ namespace UnityTemplateProjects
             this.m_currentFramesCooldown = 0;
         }
 
-        private void ShotHelper(float angle, GameObject projectile)
+        private void ShotHelper(float angle, GameObject projectileGO)
         {
-            projectile.transform.RotateAround(projectile.transform.position, Vector3.up, angle);
-            projectile.GetComponent<Projectile>().ShootDirection = projectile.transform.forward;
+            projectileGO.transform.RotateAround(projectileGO.transform.position, Vector3.up, angle);
+            var projectile = projectileGO.GetComponent<Projectile>();
+            projectile.ShootDirection = projectileGO.transform.forward;
+            projectile.Sender = this.gameObject;
         }
 
         private void ShootOddAmount(int spreadAmount)
