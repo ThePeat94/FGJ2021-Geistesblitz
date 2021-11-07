@@ -284,7 +284,7 @@ public class MeshGenerator : MonoBehaviour
         vertices.Add(new Vector3(x + Scale, Scale, y));
         vertices.Add(new Vector3(x + Scale, Scale, y + Scale));
 
-        AddUvsForTile(0, 0);
+        AddUvsForTile(0, 1);
 
         triangles.Add(last);
         triangles.Add(last + 1);
