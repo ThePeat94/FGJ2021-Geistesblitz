@@ -9,6 +9,8 @@ namespace UnityTemplateProjects
     {
         [SerializeField] private PlayerData m_playerData;
         [SerializeField] private Transform m_projectileSpawn;
+        [SerializeField] private AudioClip m_lightningSound;
+        [SerializeField] private AudioSource m_sfxPlayer;
         private InputProcessor m_inputProcessor;
         private int m_currentFramesCooldown;
 
@@ -42,6 +44,10 @@ namespace UnityTemplateProjects
             else
                 this.ShootOddAmount(spreadShotCount);
 
+            this.m_sfxPlayer.clip = this.m_lightningSound;
+            this.m_sfxPlayer.loop = false;
+            this.m_sfxPlayer.Play();
+            
             this.m_currentFramesCooldown = 0;
         }
 
