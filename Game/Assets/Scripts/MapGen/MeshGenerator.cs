@@ -10,11 +10,6 @@ using System.Linq;
 [RequireComponent(typeof(MeshCollider))]
 public class MeshGenerator : MonoBehaviour
 {
-    // Texture Positions
-    const int TILES_X = 2;
-    const int TILES_Y = 2;
-
-
     public int Seed = 1986;
     public int Width = 64;
     public int Height = 64;
@@ -28,7 +23,6 @@ public class MeshGenerator : MonoBehaviour
 
     List<Vector3> vertices = new List<Vector3>();
     List<int> triangles = new List<int>();
-    List<Vector2> uvs = new List<Vector2>();
     List<GameObject> enemiesSpawned = new List<GameObject>();
     private List<GameObject> spawnedPowerups = new List<GameObject>();
     private LevelMap map;
@@ -39,10 +33,10 @@ public class MeshGenerator : MonoBehaviour
     private const float TWO_POWERUPS_CHANCE = 0.1f;
 
     // Start is called before the first frame update
-    void Start()
-    {
-        Generate();
-    }
+    // void Start()
+    // {
+    //     Generate();
+    // }
 
     // void OnValidate()
     // {        
@@ -56,6 +50,8 @@ public class MeshGenerator : MonoBehaviour
         //this.Seed = UnityEngine.Random.Range(int.MinValue, int.MaxValue);
         this.CleanSpawnedGameObjectList(this.enemiesSpawned);
         this.CleanSpawnedGameObjectList(this.spawnedPowerups);
+        vertices.Clear();
+        triangles.Clear();
 
         pg = new ProdGen(Seed);
         mg = new MapGen(pg, Width, Height, Threshold);
@@ -63,7 +59,6 @@ public class MeshGenerator : MonoBehaviour
 
         mesh = new Mesh();
         GetComponent<MeshFilter>().mesh = mesh;
-        //GetComponent<MeshRenderer>().material =
 
         CreateShape();
         UpdateMesh();
@@ -114,7 +109,6 @@ public class MeshGenerator : MonoBehaviour
         mesh.Clear();
                 
         mesh.vertices = vertices.ToArray();
-        mesh.uv = uvs.ToArray();
         mesh.triangles = triangles.ToArray();
         mesh.RecalculateNormals();
         GetComponent<MeshCollider>().sharedMesh = mesh;
@@ -122,9 +116,6 @@ public class MeshGenerator : MonoBehaviour
 
     private void CreateShape()
     {
-        vertices.Clear();
-        triangles.Clear();
-        uvs.Clear();
         for (int y = 0; y <= map.H; y++)
         {
             for (int x = 0; x <= map.W; x++)
@@ -148,24 +139,6 @@ public class MeshGenerator : MonoBehaviour
         }
     }
 
-    private void AddUvsForTile(int x, int y)
-    {
-        var sizeX = 1 / (float)TILES_X;
-        var sizeY = 1 / (float)TILES_Y;
-        float margin = 0.01f;
-
-        var startX = sizeX * x + margin;
-        var endX = startX + sizeX - margin;
-
-        var startY = 1f - (sizeY * y + margin);
-        var endY = 1f - (sizeY * y + sizeY - margin);
-
-        uvs.Add(new Vector2(endX, endY));
-        uvs.Add(new Vector2(startX, endY));
-        uvs.Add(new Vector2(endX, startY));
-        uvs.Add(new Vector2(startX, startY));
-    }
-
     private void AddWallE(int x, int y)
     {
         x *= (int)Scale;
@@ -176,8 +149,6 @@ public class MeshGenerator : MonoBehaviour
         vertices.Add(new Vector3(x + Scale, Scale, y + Scale));
         vertices.Add(new Vector3(x + Scale, 0, y));
         vertices.Add(new Vector3(x + Scale, 0, y + Scale));
-
-        AddUvsForTile(0, 0);
 
         triangles.Add(last);
         triangles.Add(last + 2);
@@ -198,8 +169,6 @@ public class MeshGenerator : MonoBehaviour
         vertices.Add(new Vector3(x, 0, y));
         vertices.Add(new Vector3(x, 0, y + Scale));
 
-        AddUvsForTile(0, 0);
-
         triangles.Add(last);
         triangles.Add(last + 1);
         triangles.Add(last + 2);
@@ -219,8 +188,6 @@ public class MeshGenerator : MonoBehaviour
         vertices.Add(new Vector3(x, 0, y));
         vertices.Add(new Vector3(x+Scale, 0, y));
 
-        AddUvsForTile(0, 0);
-
         triangles.Add(last);
         triangles.Add(last + 2);
         triangles.Add(last + 1);
@@ -239,8 +206,6 @@ public class MeshGenerator : MonoBehaviour
         vertices.Add(new Vector3(x + Scale, Scale, y+Scale));
         vertices.Add(new Vector3(x, 0, y+Scale));
         vertices.Add(new Vector3(x + Scale, 0, y+Scale));
-
-        AddUvsForTile(0, 0);
 
         triangles.Add(last);
         triangles.Add(last + 1);
@@ -262,8 +227,6 @@ public class MeshGenerator : MonoBehaviour
         vertices.Add(new Vector3(x + Scale, 0, y));
         vertices.Add(new Vector3(x + Scale, 0, y + Scale));
 
-        AddUvsForTile(1, 0);
-
         triangles.Add(last);
         triangles.Add(last + 1);
         triangles.Add(last + 2);
@@ -283,8 +246,6 @@ public class MeshGenerator : MonoBehaviour
         vertices.Add(new Vector3(x, Scale, y + Scale));
         vertices.Add(new Vector3(x + Scale, Scale, y));
         vertices.Add(new Vector3(x + Scale, Scale, y + Scale));
-
-        AddUvsForTile(0, 1);
 
         triangles.Add(last);
         triangles.Add(last + 1);
