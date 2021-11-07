@@ -22,6 +22,7 @@ public class MeshGenerator : MonoBehaviour
     public float Scale = 2;
     public GameObject Player;
     public List<GameObject> Enemies;
+    public List<GameObject> Props;
     public List<GameObject> PowerUps;
     public GameObject PortalEnd;
 
@@ -31,6 +32,7 @@ public class MeshGenerator : MonoBehaviour
     List<int> triangles = new List<int>();
     List<Vector2> uvs = new List<Vector2>();
     List<GameObject> enemiesSpawned = new List<GameObject>();
+    List<GameObject> propsSpawned = new List<GameObject>();
     private List<GameObject> spawnedPowerups = new List<GameObject>();
     private LevelMap map;
     private ProdGen pg;
@@ -56,6 +58,7 @@ public class MeshGenerator : MonoBehaviour
         // Commented out - seed should be an outside parameter
         //this.Seed = UnityEngine.Random.Range(int.MinValue, int.MaxValue);
         this.CleanSpawnedGameObjectList(this.enemiesSpawned);
+        this.CleanSpawnedGameObjectList(this.propsSpawned);
         this.CleanSpawnedGameObjectList(this.spawnedPowerups);
 
         pg = new ProdGen(Seed);
@@ -91,12 +94,28 @@ public class MeshGenerator : MonoBehaviour
                     SpawnEnemy(spawn.X, spawn.Y);
                     r.POIs.Remove(spawn);
                 }
+
+
                 if(PowerUps.Count > 0)
                 {
                     SpawnRandomPowerupsInRoom(r);
                 }
+
+                if(Props.Count > 0)
+                {                    
+                    var amnt = r.POIs.Count / 4;
+                    var copy = r.POIs.ToArray().ToList();
+                    pg.Shuffle(copy);
+                    for (int i = 0; i < amnt; i++)
+                    {
+                        var p = copy[i];
+                        SpawnProp(p.X, p.Y);
+                        r.POIs.Remove(p);
+                    }
+                }
             }
         }
+
         var endRoomCenter = pg.Select(mg.EndRoom.POIs);
         if (endRoomCenter.IsEmpty) endRoomCenter = mg.EndRoom.Center();
         this.PortalEnd.transform.position = new Vector3(endRoomCenter.X * this.Scale + Scale/2.0f, 1f, endRoomCenter.Y * this.Scale + Scale / 2.0f);
@@ -111,6 +130,17 @@ public class MeshGenerator : MonoBehaviour
             inst.transform.position = new Vector3(x * Scale, 1f, y * Scale);
             enemiesSpawned.Add(inst);
             Debug.Log($"Spawned {en.name} at {x},{y}");
+        }
+    }
+
+    private void SpawnProp(int x ,int y)
+    {
+        var en = Props.First();
+        if (en != null)
+        {
+            var inst = Instantiate(en);
+            inst.transform.position = new Vector3(x * Scale, 1f, y * Scale);
+            propsSpawned.Add(inst);
         }
     }
 
