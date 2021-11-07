@@ -17,8 +17,7 @@ MonoBehaviour:
   m_dashDistance: 2.5
   m_dashFramesCooldown: 75
   m_shootFramesCooldown: 22
-  m_projectilePrefab: {fileID: 6733297148037201929, guid: 5faf2a87def3f5a48a3a0dfb7cc8d6d1, type: 3}
+  m_projectilePrefab: {fileID: 6733297148037201929, guid: 2da76129ef3334913844a8c4071632a6, type: 3}
   m_attackDamage: 10
   m_defense: 1
-  m_healthData: {fileID: 0}
   m_spreadShotCount: 1
