@@ -63,7 +63,7 @@ public class PlayerMovementController : MonoBehaviour
             Application.Quit();
             return;
         }
-        
+
         if (this.m_isGameOver)
         {
             if (this.m_inputProcessor.RestartTriggered)
