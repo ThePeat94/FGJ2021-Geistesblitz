@@ -319,11 +319,14 @@ public class MeshGenerator : MonoBehaviour
     private void SpawnRandomPowerupsInRoom(Node room)
     {
         var chance = pg.RangeF(0, 1);
+        var mod = mg.IsOnCriticalPath(room) ? 1 : 2;
+            
+
         var amountToSpawn = 0;
 
-        if (chance < TWO_POWERUPS_CHANCE)
+        if (chance < TWO_POWERUPS_CHANCE * mod)
             amountToSpawn = 1;
-        else if (chance < ONE_POWERUP_CHANCE)
+        else if (chance < ONE_POWERUP_CHANCE * mod)
             amountToSpawn = 2;
         else
             return;
