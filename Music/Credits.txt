@@ -1,0 +1,14 @@
+The music was created within Studio One 5.
+Instruments from Studio One 5 Sound Library and LABS:
+https://labs.spitfireaudio.com/#type=&search=&new=true
+
+SFX used:
+-bat wings: https://freesfx.co.uk/sfx/bat-wings
+-Ghost ascending: Offers.adobe / Cartoon Balloon Being Blown Up 02
+-Game Over drum sound: Offers.adobe / Cartoon Drum Bass 01
+-Fall down: offers.adobe / Weapon Bow Recoil Elastic 01
+-Fireball hit: https://freesound.org/people/HighPixel/sounds/431174/
+-Fireball throw: offers.adobe / Fire Fireball Large 02
+-Dash: https://freesfx.co.uk/sfx/swoosh
+-Health button push: https://soundbible.com/419-Tiny-Button-Push.html
+-Pumpkin dying: offers.adobe / Animal Mammal Carnivor Grizzlybear Roar

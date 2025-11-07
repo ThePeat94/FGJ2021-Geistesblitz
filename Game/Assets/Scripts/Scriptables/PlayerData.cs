@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System.Runtime.CompilerServices;
+using UnityEngine;
 
 namespace Scriptables
 {
@@ -13,7 +14,7 @@ namespace Scriptables
         [SerializeField] private GameObject m_projectilePrefab;
         [SerializeField] private int m_attackDamage;
         [SerializeField] private int m_defense;
-        [SerializeField] private ResourceData m_healthData;
+        [SerializeField] private int m_spreadShotCount;
 
         public float MovementSpeed => this.m_movementSpeed;
         public float RotationSpeed => this.m_rotationSpeed;
@@ -23,7 +24,6 @@ namespace Scriptables
         public GameObject ProjectilePrefab => this.m_projectilePrefab;
         public int AttackDamage => this.m_attackDamage;
         public int Defense => this.m_defense;
-        public ResourceData HealthData => this.m_healthData;
-
+        public int SpreadShotCount => this.m_spreadShotCount;
     }
 }

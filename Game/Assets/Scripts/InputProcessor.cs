@@ -16,6 +16,8 @@ public class InputProcessor : MonoBehaviour
     public bool InspectTriggered => this.m_playerInput.Actions.Inspect.triggered;
     public bool ShootTriggered { get; private set; }
     public bool DashTriggered => this.m_playerInput.Actions.Dash.triggered;
+    public bool RestartTriggered => this.m_playerInput.Actions.Restart.triggered;
+    public bool EscapeTriggered => this.m_playerInput.Actions.Escape.triggered;
 
     private void Awake()
     {

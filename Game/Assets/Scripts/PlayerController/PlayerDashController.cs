@@ -36,11 +36,8 @@ namespace UnityTemplateProjects
 
         private void Dash()
         {
-            var forwardMovement = this.transform.forward * this.m_inputProcessor.Movement.y;
-            var sideMovement = this.transform.right * this.m_inputProcessor.Movement.x;
-            var dashTarget = Vector3.Lerp(forwardMovement, sideMovement, 0.5f).normalized * this.m_playerStatsController.CurrentDashDistance;
-            dashTarget.y = 0f;
-            this.m_currentDashTarget = this.transform.position + dashTarget;
+            var dashDistance = this.m_inputProcessor.Movement * this.m_playerStatsController.CurrentDashDistance;
+            this.m_currentDashTarget = this.transform.position + dashDistance.ToXZVector();
             this.m_dashCoroutine = this.StartCoroutine(this.PerformDash());
         }
 
@@ -68,7 +65,7 @@ namespace UnityTemplateProjects
              !Physics.Raycast(this.transform.position, 
                  this.m_inputProcessor.Movement.ToXZVector(), 
                  this.m_playerStatsController.CurrentDashDistance, 
-                 1 << this.m_hitableLayers) &&
+                 this.m_hitableLayers) &&
              this.m_currentDashFrameCooldown > this.m_playerStatsController.CurrentDashFramesCooldown;
         
     }

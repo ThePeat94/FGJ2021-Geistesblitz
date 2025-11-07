@@ -7,7 +7,9 @@ using Scriptables;
 using UI;
 using Unity.VisualScripting;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using UnityTemplateProjects;
+using UnityTemplateProjects.Utils;
 
 public class PlayerMovementController : MonoBehaviour
 {
@@ -21,34 +23,57 @@ public class PlayerMovementController : MonoBehaviour
     private GameObject m_currentInteractable;
     private PlayerDashController m_playerDashController;
     private Vector3 m_mousePlayerPosition;
+
+    private bool m_isGameOver;
     
     private static readonly int s_isWalkingHash = Animator.StringToHash("IsWalking");
 
+    private int m_currentFallDamageCooldown;
+    
     public static PlayerMovementController Instance => s_instance;
 
 
     private void Awake()
     {
-        if (s_instance == null)
-        {
-            s_instance = this;
-        }
-        else
-        {
-            Destroy(this.gameObject);
-            return;
-        }
-
+        s_instance = this;
         this.m_playerStatsController = this.GetComponent<PlayerStatsController>();
         this.m_inputProcessor = this.GetComponent<InputProcessor>();
         this.m_playerDashController = this.GetComponent<PlayerDashController>();
         this.m_characterController = this.GetComponent<CharacterController>();
         this.m_animator = this.GetComponent<Animator>();
     }
-    
+
+    private void Start()
+    {
+        this.m_playerStatsController.HealthController.HealthDownToZero += this.OnDied;
+    }
+
+    private void OnDied(object sender, System.EventArgs e)
+    {
+        this.m_isGameOver = true;
+        PlayerHUD.Instance.ShowGameOverScreen();
+        MusicPlayer.Instance.PlayGameOver();
+    }
+
     // Update is called once per frame
     void Update()
     {
+        if(this.m_inputProcessor.EscapeTriggered)
+        {
+            Application.Quit();
+            return;
+        }
+
+        if (this.m_isGameOver)
+        {
+            if (this.m_inputProcessor.RestartTriggered)
+            {
+                SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
+                return;
+            }
+            return;
+        }
+        
         if (this.m_playerDashController.IsDashing) return;
         
         var mouseRay = Camera.main.ScreenPointToRay(this.m_inputProcessor.MouseScreenPosition);
@@ -59,6 +84,8 @@ public class PlayerMovementController : MonoBehaviour
         }
         this.Move();
         this.Rotate();
+
+        this.CheckOutOfBoundaries();
     }
 
     private void LateUpdate()
@@ -68,11 +95,7 @@ public class PlayerMovementController : MonoBehaviour
     
     protected void Move()
     {
-        var forwardMovement = this.transform.forward * this.m_inputProcessor.Movement.y;
-        var sideMovement = this.transform.right * this.m_inputProcessor.Movement.x;
-
-        this.m_moveDirection = Vector3.Lerp(forwardMovement, sideMovement, 0.5f).normalized;
-        this.m_moveDirection.y = Physics.gravity.y;
+        this.m_moveDirection = new Vector3(this.m_inputProcessor.Movement.x, Physics.gravity.y, this.m_inputProcessor.Movement.y);
         this.m_characterController.Move(this.m_moveDirection * Time.deltaTime * this.m_playerStatsController.CurrentMovementSpeed);
     }
         
@@ -80,7 +103,13 @@ public class PlayerMovementController : MonoBehaviour
     {
         this.transform.LookAt(this.m_mousePlayerPosition);
     }
-
+    
+    private void CheckOutOfBoundaries()
+    {
+        if (this.transform.position.y > -100) return;
+        this.m_playerStatsController.HealthController.Kill();
+    }
+    
     private void UpdateAnimator()
     {
         this.m_animator.SetBool(s_isWalkingHash, this.m_moveDirection != Physics.gravity);

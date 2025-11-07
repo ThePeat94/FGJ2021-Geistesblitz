@@ -1,7 +1,11 @@
 
+using System;
+using EventArgs;
 using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.AI;
+using UnityEngine.UI;
+using Random = UnityEngine.Random;
 
 public class EnemyRanged : MonoBehaviour
 {
@@ -9,9 +13,10 @@ public class EnemyRanged : MonoBehaviour
     private Transform m_player;
 
     [SerializeField] private LayerMask m_whatIsGround, m_whatIsPlayer;
-
-    [SerializeField] private float m_health;
-
+    [SerializeField] private AudioClip m_shootSound;
+    [SerializeField] private AudioClip m_dyingSound;
+    [SerializeField] private AudioSource m_sfxShoot;
+    [SerializeField] private AudioSource m_sfxDying;
     //Patroling
     private Vector3 m_walkPoint;
     bool walkPointSet;
@@ -25,10 +30,20 @@ public class EnemyRanged : MonoBehaviour
     [SerializeField] private float m_sightRange = 15, m_attackRange = 7;
     private bool m_playerInSightRange, m_playerInAttackRange;
 
+    //Health Bar
+    [SerializeField] public Slider m_healthBar;
+    
     private void Awake()
     {
         m_player = PlayerMovementController.Instance.transform;
         m_agent = GetComponent<NavMeshAgent>();
+    }
+
+    private void Start()
+    {
+        this.GetComponent<HealthController>().HealthDownToZero += this.OnHealthDownToZero;
+        this.GetComponent<HealthController>().ResourceController.ResourceValueChanged += this.OnHealthChanged;
+        this.GetComponent<HealthController>().ResourceController.MaxValueChanged += this.OnMaxHealthChanged;
     }
 
     private void Update()
@@ -62,7 +77,7 @@ public class EnemyRanged : MonoBehaviour
 
         m_walkPoint = new Vector3(transform.position.x + randomX, transform.position.y, transform.position.z + randomZ);
 
-        if (Physics.Raycast(m_walkPoint, -transform.up, 2f, m_whatIsGround))
+        if (Physics.Raycast(m_walkPoint, -transform.up, 2f, m_whatIsGround) && this.m_agent.CalculatePath(this.m_walkPoint, new NavMeshPath()))
             walkPointSet = true;
     }
 
@@ -82,7 +97,13 @@ public class EnemyRanged : MonoBehaviour
         {
             var instantiatedProjectile = Instantiate(m_projectile);
             instantiatedProjectile.transform.position = this.transform.position + 2*this.transform.forward;
-            instantiatedProjectile.GetComponent<Projectile>().ShootDirection = this.transform.forward;
+            var projectile = instantiatedProjectile.GetComponent<Projectile>();
+            projectile.ShootDirection = this.transform.forward;
+            projectile.Sender = this.gameObject;
+            
+            this.m_sfxShoot.clip = this.m_shootSound;
+            this.m_sfxShoot.loop = false;
+            this.m_sfxShoot.Play();
 
             alreadyAttacked = true;
             Invoke(nameof(ResetAttack), m_timeBetweenAttacks);
@@ -95,12 +116,29 @@ public class EnemyRanged : MonoBehaviour
 
     public void TakeDamage(int damage)
     {
-        m_health -= damage;
-
-        if (m_health <= 0) Invoke(nameof(DestroyEnemy), 0.5f);
+        this.GetComponent<HealthController>().TakeDamage(damage);
     }
+    
+    private void OnHealthChanged(object sender, ResourceValueChangedEventArgs e)
+    {
+        this.m_healthBar.value = (e.NewValue / this.GetComponent<HealthController>().ResourceController.MaxValue);
+    }
+    
+    private void OnMaxHealthChanged(object sender, ResourceValueChangedEventArgs e)
+    {
+        this.m_healthBar.value = (this.GetComponent<HealthController>().ResourceController.CurrentValue / e.NewValue);
+    }
+    
+    private void OnHealthDownToZero(object sender, System.EventArgs e)
+    {
+        this.DestroyEnemy();
+    }
+    
     private void DestroyEnemy()
     {
+        this.m_sfxDying.clip = this.m_dyingSound;
+        this.m_sfxDying.loop = false;
+        this.m_sfxDying.Play();
         Destroy(gameObject);
     }
 }

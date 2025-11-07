@@ -1,7 +1,11 @@
 
+using System;
+using EventArgs;
 using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.AI;
+using UnityEngine.UI;
+using Random = UnityEngine.Random;
 
 public partial class EnemyMelee : MonoBehaviour
 {
@@ -9,9 +13,6 @@ public partial class EnemyMelee : MonoBehaviour
     private Transform m_player;
 
     [SerializeField] private LayerMask m_whatIsGround, m_whatIsPlayer;
-
-    [SerializeField] private float m_health;
-
     //Patroling
     private Vector3 m_walkPoint;
     bool walkPointSet;
@@ -24,10 +25,20 @@ public partial class EnemyMelee : MonoBehaviour
     [SerializeField] private float m_sightRange = 15, m_attackRange = 1;
     private bool m_playerInSightRange, m_playerInAttackRange;
 
+    //Health Bar
+    [SerializeField] public Slider m_healthBar;
+    
     private void Awake()
     {
         m_player = PlayerMovementController.Instance.transform;
         m_agent = GetComponent<NavMeshAgent>();
+    }
+
+    private void Start()
+    {
+        this.GetComponent<HealthController>().HealthDownToZero += this.OnHealthDownToZero;
+        this.GetComponent<HealthController>().ResourceController.ResourceValueChanged += this.OnHealthChanged;
+        this.GetComponent<HealthController>().ResourceController.MaxValueChanged += this.OnMaxHealthChanged;
     }
 
     private void Update()
@@ -35,7 +46,6 @@ public partial class EnemyMelee : MonoBehaviour
         //Check for sight and attack range
         m_playerInSightRange = Physics.CheckSphere(transform.position, m_sightRange, m_whatIsPlayer);
         m_playerInAttackRange = Physics.CheckSphere(transform.position, m_attackRange, m_whatIsPlayer);
-        Debug.Log(m_playerInAttackRange);
         if (!m_playerInSightRange && !m_playerInAttackRange) Patroling();
         if (m_playerInSightRange && !m_playerInAttackRange) ChasePlayer();
         if (m_playerInAttackRange && m_playerInSightRange) AttackPlayer();
@@ -62,7 +72,7 @@ public partial class EnemyMelee : MonoBehaviour
 
         m_walkPoint = new Vector3(transform.position.x + randomX, transform.position.y, transform.position.z + randomZ);
 
-        if (Physics.Raycast(m_walkPoint, -transform.up, 2f, m_whatIsGround))
+        if (Physics.Raycast(m_walkPoint, -transform.up, 2f, m_whatIsGround) && this.m_agent.CalculatePath(this.m_walkPoint, new NavMeshPath()))
             walkPointSet = true;
     }
 
@@ -81,7 +91,7 @@ public partial class EnemyMelee : MonoBehaviour
         if (!alreadyAttacked)
         {
             // MELEE ATTACK
-            m_player.SendMessage("TakeDamage", 1);
+            m_player.GetComponent<HealthController>().TakeDamage(1);
             
             alreadyAttacked = true;
             Invoke(nameof(ResetAttack), m_timeBetweenAttacks);
@@ -94,12 +104,27 @@ public partial class EnemyMelee : MonoBehaviour
 
     public void TakeDamage(int damage)
     {
-        m_health -= damage;
-
-        if (m_health <= 0) Invoke(nameof(DestroyEnemy), 0.5f);
+        this.GetComponent<HealthController>().TakeDamage(damage);
     }
+    
+    private void OnHealthChanged(object sender, ResourceValueChangedEventArgs e)
+    {
+        this.m_healthBar.value = (e.NewValue / this.GetComponent<HealthController>().ResourceController.MaxValue);
+    }
+    
+    private void OnMaxHealthChanged(object sender, ResourceValueChangedEventArgs e)
+    {
+        this.m_healthBar.value = (this.GetComponent<HealthController>().ResourceController.CurrentValue / e.NewValue);
+    }
+    
+    private void OnHealthDownToZero(object sender, System.EventArgs e)
+    {
+        this.DestroyEnemy();
+    }
+    
     private void DestroyEnemy()
     {
+        this.GetComponent<HealthController>().HealthDownToZero -= this.OnHealthDownToZero;
         Destroy(gameObject);
     }
 }

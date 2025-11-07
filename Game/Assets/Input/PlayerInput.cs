@@ -65,6 +65,22 @@ public class @PlayerInput : IInputActionCollection, IDisposable
                     ""expectedControlType"": ""Vector2"",
                     ""processors"": """",
                     ""interactions"": """"
+                },
+                {
+                    ""name"": ""Restart"",
+                    ""type"": ""Button"",
+                    ""id"": ""220dc248-79b9-4439-a1dc-164dd6c7370d"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """"
+                },
+                {
+                    ""name"": ""Escape"",
+                    ""type"": ""Button"",
+                    ""id"": ""b691fce9-63e4-4c05-9fe0-7e648ae655d2"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """"
                 }
             ],
             ""bindings"": [
@@ -177,6 +193,28 @@ public class @PlayerInput : IInputActionCollection, IDisposable
                     ""action"": ""MouseTracking"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""953f6c25-7121-4f6f-9953-e1c244ee2ec6"",
+                    ""path"": ""<Keyboard>/r"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Restart"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""8c9ae9c1-4f52-44b1-917f-c641312219cd"",
+                    ""path"": ""<Keyboard>/escape"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Escape"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
                 }
             ]
         }
@@ -191,6 +229,8 @@ public class @PlayerInput : IInputActionCollection, IDisposable
         m_Actions_Shoot = m_Actions.FindAction("Shoot", throwIfNotFound: true);
         m_Actions_Dash = m_Actions.FindAction("Dash", throwIfNotFound: true);
         m_Actions_MouseTracking = m_Actions.FindAction("MouseTracking", throwIfNotFound: true);
+        m_Actions_Restart = m_Actions.FindAction("Restart", throwIfNotFound: true);
+        m_Actions_Escape = m_Actions.FindAction("Escape", throwIfNotFound: true);
     }
 
     public void Dispose()
@@ -246,6 +286,8 @@ public class @PlayerInput : IInputActionCollection, IDisposable
     private readonly InputAction m_Actions_Shoot;
     private readonly InputAction m_Actions_Dash;
     private readonly InputAction m_Actions_MouseTracking;
+    private readonly InputAction m_Actions_Restart;
+    private readonly InputAction m_Actions_Escape;
     public struct ActionsActions
     {
         private @PlayerInput m_Wrapper;
@@ -256,6 +298,8 @@ public class @PlayerInput : IInputActionCollection, IDisposable
         public InputAction @Shoot => m_Wrapper.m_Actions_Shoot;
         public InputAction @Dash => m_Wrapper.m_Actions_Dash;
         public InputAction @MouseTracking => m_Wrapper.m_Actions_MouseTracking;
+        public InputAction @Restart => m_Wrapper.m_Actions_Restart;
+        public InputAction @Escape => m_Wrapper.m_Actions_Escape;
         public InputActionMap Get() { return m_Wrapper.m_Actions; }
         public void Enable() { Get().Enable(); }
         public void Disable() { Get().Disable(); }
@@ -283,6 +327,12 @@ public class @PlayerInput : IInputActionCollection, IDisposable
                 @MouseTracking.started -= m_Wrapper.m_ActionsActionsCallbackInterface.OnMouseTracking;
                 @MouseTracking.performed -= m_Wrapper.m_ActionsActionsCallbackInterface.OnMouseTracking;
                 @MouseTracking.canceled -= m_Wrapper.m_ActionsActionsCallbackInterface.OnMouseTracking;
+                @Restart.started -= m_Wrapper.m_ActionsActionsCallbackInterface.OnRestart;
+                @Restart.performed -= m_Wrapper.m_ActionsActionsCallbackInterface.OnRestart;
+                @Restart.canceled -= m_Wrapper.m_ActionsActionsCallbackInterface.OnRestart;
+                @Escape.started -= m_Wrapper.m_ActionsActionsCallbackInterface.OnEscape;
+                @Escape.performed -= m_Wrapper.m_ActionsActionsCallbackInterface.OnEscape;
+                @Escape.canceled -= m_Wrapper.m_ActionsActionsCallbackInterface.OnEscape;
             }
             m_Wrapper.m_ActionsActionsCallbackInterface = instance;
             if (instance != null)
@@ -305,6 +355,12 @@ public class @PlayerInput : IInputActionCollection, IDisposable
                 @MouseTracking.started += instance.OnMouseTracking;
                 @MouseTracking.performed += instance.OnMouseTracking;
                 @MouseTracking.canceled += instance.OnMouseTracking;
+                @Restart.started += instance.OnRestart;
+                @Restart.performed += instance.OnRestart;
+                @Restart.canceled += instance.OnRestart;
+                @Escape.started += instance.OnEscape;
+                @Escape.performed += instance.OnEscape;
+                @Escape.canceled += instance.OnEscape;
             }
         }
     }
@@ -317,5 +373,7 @@ public class @PlayerInput : IInputActionCollection, IDisposable
         void OnShoot(InputAction.CallbackContext context);
         void OnDash(InputAction.CallbackContext context);
         void OnMouseTracking(InputAction.CallbackContext context);
+        void OnRestart(InputAction.CallbackContext context);
+        void OnEscape(InputAction.CallbackContext context);
     }
 }
